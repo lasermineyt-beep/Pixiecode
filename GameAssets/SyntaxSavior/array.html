@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JanellaCult | Array Debugging Game</title>
+<style>
+  
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0f172a;
+    color: white;
+    margin: 0;
+    padding-top: 80px;
+}
+
+/* Nav */
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 96%;
+    background: rgba(17, 41, 160, 0.9);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 40px;
+    z-index: 1000;
+}
+nav a { 
+  color: white; 
+  text-decoration: none;
+   margin: 0 12px; 
+   font-size: 14px; 
+
+ }
+
+.start-btn { 
+  background: #2ab1a1ff; 
+  padding: 8px 16px; 
+  border-radius: 6px; 
+  font-weight: bold; 
+
+}
+
+/* Game Layout */
+.game-container { 
+  max-width: 900px; 
+  margin: 0 auto; 
+  padding: 20px; 
+
+}
+
+.level-info { 
+  background: #1e293b; 
+  padding: 20px; border-radius: 8px; 
+  margin-bottom: 20px; 
+  border-left: 5px solid #2ab1a1ff; 
+
+}
+.editor-container { 
+  background: #282c34; 
+  border-radius: 8px; 
+  overflow: hidden; 
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+
+}
+
+.editor-header { 
+  background: #21252b; 
+  padding: 10px 20px; 
+  font-family: monospace; 
+  font-size: 13px; color: #abb2bf; 
+  display: flex; justify-content: space-between; 
+
+}
+
+#code-editor { 
+  counter-reset: line; 
+  padding: 20px; 
+  background:#282c34; color:#e06c75; 
+  font-family:'Courier New', monospace; 
+  font-size:16px; 
+  overflow:auto; 
+  border:none; 
+  border-radius:8px; 
+  white-space:pre;
+  line-height:1.5; 
+
+}
+
+#code-editor div { 
+  counter-increment: line; 
+  position: relative; 
+  padding-left:40px; 
+
+}
+
+#code-editor div::before { 
+  content: counter(line); 
+  position:absolute; 
+  left:10px; 
+  color:#565c64; 
+
+}
+
+.controls { 
+  display:flex; 
+  gap:15px; 
+  margin-top:20px; 
+
+}
+
+button { 
+  cursor:pointer; 
+  padding:12px 24px; 
+  border:none; 
+  border-radius:4px; 
+  font-weight:bold; 
+  transition:0.3s; 
+
+}
+
+.btn-run { 
+  background: #2ab1a1ff; 
+  color: white;
+
+} 
+
+.btn-run:hover { 
+  background:#239487; 
+
+}
+
+.btn-skip { 
+  background:#d97706; 
+  color:white; 
+
+} 
+.btn-skip:hover { 
+  background:#b45309; 
+
+}
+
+#message { 
+  margin-top:20px; 
+  padding:15px; 
+  border-radius:4px; 
+  display:none; 
+
+}
+.success { 
+  background:#065f46; 
+  color:#a7f3d0; 
+  border:1px solid #059669; 
+
+}
+
+.error { 
+  background:#7f1d1d; 
+  color:#fecaca; 
+  border:1px solid #dc2626; }
+
+/* Solution Box */
+#solution-box {
+    background:#1e293b;
+    border-left:5px solid #2ab1a1ff;
+    padding:15px;
+    border-radius:8px;
+    color:white;
+    font-family:'Courier New', monospace;
+    font-size:16px;
+    white-space:pre;
+    overflow-x:auto;
+    margin-top:15px;
+
+}
+
+.solution-highlight { 
+  color:#98c379; 
+  font-weight:bold; 
+  
+  }
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #0f172a;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 15px 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #22d3ee 0%, #2ab1a1 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+</style>
+</head>
+<body>
+
+<nav>
+    <strong>JanellaCult</strong>
+    <div>
+        <a href="/index.html">Home</a>
+    </div>
+</nav>
+
+<div class="game-container">
+    <div class="level-info">
+        <h2 id="level-title">Level 1: The Missing Piece</h2>
+        <p id="level-desc">Java lines must always end with a specific character. Fix the code to print "Hello World".</p>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+    </div>
+
+    <div class="editor-container">
+        <div class="editor-header">
+            <span>Main.java</span>
+            <span>Language: Java</span>
+        </div>
+        <pre id="code-editor" contenteditable="true" spellcheck="false"></pre>
+    </div>
+
+    <div class="controls">
+        <button class="btn-run" onclick="checkCode()">Run Code (Compile)</button>
+        <button class="btn-skip" onclick="skipLevel()">Skip Level</button>
+    </div>
+
+    <div id="message"></div>
+    <div id="solution-box" style="display:none;"></div>
+</div>
+
+<script>
+// Array Debugging Levels
+const levels = [
+
+// ====== Sound Effects ======
+function playSuccessSound() {
+  try {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
+    oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1); // E5
+    oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2); // G5
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+  } catch(e) {
+    // Fallback: no sound if Web Audio API not supported
+  }
+}
+
+function playFailureSound() {
+  try {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(392, audioContext.currentTime); // G4
+    oscillator.frequency.setValueAtTime(330, audioContext.currentTime + 0.1); // E4
+    oscillator.frequency.setValueAtTime(262, audioContext.currentTime + 0.2); // C4
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+  } catch(e) {
+    // Fallback: no sound if Web Audio API not supported
+  }
+}
+{
+title:"Level 1: Declare Array",
+desc:"Declare an integer array 'numbers' correctly.",
+initialCode:'public class Main {\n  public static void main(String[] args) {\n    numbers = {1,2,3,4,5};\n  }\n}',
+solution:'int[] numbers = {1,2,3,4,5};',
+solutionFull:'public class Main {\n  public static void main(String[] args) {\n    int[] numbers = {1,2,3,4,5};\n  }\n}',
+hint:"Add type and [] to declare the array."
+},
+{
+title:"Level 2: Array Index",
+desc:"Access the first element (index 0).",
+initialCode:'public class Main {\n  public static void main(String[] args) {\n    int[] nums = {10,20,30};\n    System.out.println(nums[3]);\n  }\n}',
+solution:'nums[0]',
+solutionFull:'public class Main {\n  public static void main(String[] args) {\n    int[] nums = {10,20,30};\n    System.out.println(nums[0]);\n  }\n}',
+hint:"Array indices start at 0."
+},
+{
+title:"Level 3: Loop with length",
+desc:"Loop through array using length property.",
+initialCode:'public class Main {\n  public static void main(String[] args) {\n    int[] nums = {1,2,3};\n    for(int i=0;i<3;i++){\n      System.out.println(nums[i]);\n    }\n  }\n}',
+solution:'i<nums.length',
+solutionFull:'public class Main {\n  public static void main(String[] args) {\n    int[] nums = {1,2,3};\n    for(int i=0;i<nums.length;i++){\n      System.out.println(nums[i]);\n    }\n  }\n}',
+hint:"Use nums.length in the loop."
+},
+{
+title:"Level 4: String Array",
+desc:"Declare a string array 'names'.",
+initialCode:'public class Main {\n  public static void main(String[] args) {\n    String names = {"Alice","Bob"};\n  }\n}',
+solution:'String[] names = {"Alice","Bob"};',
+solutionFull:'public class Main {\n  public static void main(String[] args) {\n    String[] names = {"Alice","Bob"};\n  }\n}',
+hint:"Add [] after type."
+},
+{
+title:"Level 5: Modify Array Element",
+desc:"Change second element to 20.",
+initialCode:'public class Main {\n  public static void main(String[] args) {\n    int[] nums = {1,2,3};\n    nums(1)=20;\n  }\n}',
+solution:'nums[1]=20;',
+solutionFull:'public class Main {\n  public static void main(String[] args) {\n    int[] nums = {1,2,3};\n    nums[1]=20;\n  }\n}',
+hint:"Use [] to access elements."
+},
+{
+title:"Level 6: 2D Array",
+desc:"Declare a 2x2 integer array.",
+initialCode:'public class Main {\n  public static void main(String[] args) {\n    int matrix[2][2]={{1,2},{3,4}};\n  }\n}',
+solution:'int[][] matrix = {{1,2},{3,4}};',
+solutionFull:'public class Main {\n  public static void main(String[] args) {\n    int[][] matrix = {{1,2},{3,4}};\n  }\n}',
+hint:"Use [][] after type."
+},
+{
+title:"Level 7: Loop 2D Array",
+desc:"Fix inner loop to iterate correctly.",
+initialCode:'public class Main {\n  public static void main(String[] args) {\n    int[][] mat={{1,2},{3,4}};\n    for(int i=0;i<mat.length;i++){\n      for(int j=0;j<mat.length;j++){\n        System.out.println(mat[i][j]);\n      }\n    }\n  }\n}',
+solution:'j<mat[i].length',
+solutionFull:'public class Main {\n  public static void main(String[] args) {\n    int[][] mat={{1,2},{3,4}};\n    for(int i=0;i<mat.length;i++){\n      for(int j=0;j<mat[i].length;j++){\n        System.out.println(mat[i][j]);\n      }\n    }\n  }\n}',
+hint:"Inner loop should use mat[i].length."
+},
+{
+title:"Level 8: Array with new",
+desc:"Create empty array of size 5.",
+initialCode:'public class Main {\n  public static void main(String[] args) {\n    int[] nums = new int(5);\n  }\n}',
+solution:'new int[5]',
+solutionFull:'public class Main {\n  public static void main(String[] args) {\n    int[] nums = new int[5];\n  }\n}',
+hint:"Use [] when creating arrays with new."
+},
+{
+title:"Level 9: Array of Objects",
+desc:"Declare array of strings 'fruits'.",
+initialCode:'public class Main {\n  public static void main(String[] args) {\n    String fruits[3];\n    fruits[0]="Apple";\n  }\n}',
+solution:'String[] fruits = new String[3];',
+solutionFull:'public class Main {\n  public static void main(String[] args) {\n    String[] fruits = new String[3];\n    fruits[0]="Apple";\n  }\n}',
+hint:"Use [] after type and new."
+},
+{
+title:"Level 10: Sum Array Elements",
+desc:"Fix loop to sum correctly.",
+initialCode:'public class Main {\n  public static void main(String[] args) {\n    int[] nums={1,2,3,4};\n    int sum=0;\n    for(int i=0;i<=nums.length;i++){\n      sum+=nums[i];\n    }\n    System.out.println(sum);\n  }\n}',
+solution:'i<nums.length',
+solutionFull:'public class Main {\n  public static void main(String[] args) {\n    int[] nums={1,2,3,4};\n    int sum=0;\n    for(int i=0;i<nums.length;i++){\n      sum+=nums[i];\n    }\n    System.out.println(sum);\n  }\n}',
+hint:"Use i<nums.length in the loop."
+}
+];
+
+let currentLevel = 0;
+let attempts = 0;
+let totalScore = 0;
+let totalAttempts = 0;
+let isInGameSession = false; // Track if user is actively playing
+
+// ====== Warning for leaving during game ======
+window.addEventListener('beforeunload', function(e) {
+  if (isInGameSession) {
+    e.preventDefault();
+    e.returnValue = 'You are currently working on a level. Are you sure you want to leave? Your progress will be lost!';
+    return e.returnValue;
+  }
+});
+
+// Editor helper functions
+function setEditorCode(code){
+  const editor=document.getElementById('code-editor');
+  editor.innerHTML='';
+  code.split('\n').forEach(line=>{
+    const div=document.createElement('div');
+    div.textContent=line;
+    editor.appendChild(div);
+  });
+}
+function getEditorCode(){
+  const editor=document.getElementById('code-editor');
+  return Array.from(editor.children).map(div=>div.textContent).join('\n');
+}
+
+// Load level
+function loadLevel(){
+  const level=levels[currentLevel];
+  document.getElementById('level-title').innerText=level.title;
+  document.getElementById('level-desc').innerText=level.desc;
+  setEditorCode(level.initialCode);
+  document.getElementById('message').style.display='none';
+  document.getElementById('solution-box').style.display='none';
+  attempts=0;
+  document.getElementById('code-editor').style.color="#e06c75";
+  
+  // Update progress bar
+  const progressPercent = ((currentLevel + 1) / levels.length) * 100;
+  document.getElementById("progress-fill").style.width = progressPercent + "%";
+  
+  isInGameSession = true; // User is now actively playing
+}
+
+// Show full solution with missing part highlighted
+function showFullSolution(){
+  const level=levels[currentLevel];
+  const solutionBox=document.getElementById('solution-box');
+  solutionBox.innerHTML='';
+  level.solutionFull.split('\n').forEach(line=>{
+    const lineDiv=document.createElement('div');
+    if(line.includes(level.solution.trim())){
+      lineDiv.innerHTML=line.replace(level.solution.trim(),`<span class="solution-highlight">${level.solution.trim()}</span>`);
+    }else{
+      lineDiv.textContent=line;
+    }
+    solutionBox.appendChild(lineDiv);
+  });
+  solutionBox.style.display='block';
+}
+
+// Check code
+function checkCode(){
+  const playerCode=getEditorCode();
+  const msgDiv=document.getElementById('message');
+  if(playerCode.includes(levels[currentLevel].solution)){
+    msgDiv.className='success';
+    msgDiv.innerText='✓ Compilation Successful!';
+    msgDiv.style.display='block';
+    document.getElementById('code-editor').style.color='#98c379';
+    totalScore += (10 - attempts * 2); // More points for fewer attempts
+    totalAttempts += attempts;
+    playSuccessSound();
+    isInGameSession = false; // Level completed successfully
+    setTimeout(nextLevel,1500);
+  }else{
+    attempts++;
+    if(attempts>=3){
+      msgDiv.className='error';
+      msgDiv.innerText='✗ Too many failed attempts! See full solution below.';
+      msgDiv.style.display='block';
+      showFullSolution();
+      totalAttempts += attempts;
+      playFailureSound();
+      isInGameSession = false; // Level completed (failed)
+      setTimeout(nextLevel,4000);
+    }else{
+      msgDiv.className='error';
+      msgDiv.innerText=`✗ Syntax Error: ${levels[currentLevel].hint} (Attempt ${attempts}/3)`;
+      msgDiv.style.display='block';
+      playFailureSound();
+    }
+  }
+}
+
+// Skip level
+function skipLevel(){
+  const msgDiv=document.getElementById('message');
+  msgDiv.className='error';
+  msgDiv.innerText='Level Skipped! See full solution below.';
+  msgDiv.style.display='block';
+  showFullSolution();
+  playFailureSound();
+  setTimeout(nextLevel,4000);
+}
+
+function nextLevel(){
+  currentLevel++;
+  if(currentLevel<levels.length){
+    loadLevel();
+  }else{
+    // Save score
+    const user = localStorage.getItem("loggedInUser");
+    if(user){
+      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      if(users[user]){
+        const previousScore = users[user].scores.average || 0;
+        users[user].scores.average = Math.max(users[user].scores.average, totalScore);
+        users[user].challenges += 1;
+        // Update level based on score
+        if(totalScore > 50) users[user].level = 'Intermediate';
+        if(totalScore > 100) users[user].level = 'Advanced';
+
+        // Add activity
+        if(!users[user].activities) users[user].activities = [];
+        users[user].activities.unshift({
+          type: 'average',
+          game: 'Syntax Savior - Arrays',
+          score: totalScore,
+          timestamp: new Date().toISOString(),
+          improved: totalScore > previousScore
+        });
+        // Keep only last 10 activities
+        users[user].activities = users[user].activities.slice(0, 10);
+
+        localStorage.setItem('users', JSON.stringify(users));
+      }
+    }
+    isInGameSession = false; // All levels completed
+    alert(`Congratulations! You've completed all levels!\nTotal Score: ${totalScore}\nTotal Attempts: ${totalAttempts}`);
+    resetGame();
+  }
+}
+
+function resetGame(){
+  currentLevel=0;
+  loadLevel();
+}
+
+window.onload=loadLevel;
+</script>
+
+</body>
+</html>

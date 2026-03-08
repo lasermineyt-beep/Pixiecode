@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JanellaCult | Learn Java</title>
+    <style>
+        :root {
+            --primary-blue: rgba(17, 41, 160, 0.9);
+            --accent-teal: #2ab1a1ff;
+            --dark-bg: #0f172a;
+            --code-bg: #1e293b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: #e2e8f0;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* --- Your Nav CSS --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--primary-blue);
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 40px;
+            z-index: 1000;
+            box-sizing: border-box;
+            align-items: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 12px;
+            font-size: 14px;
+        }
+
+        .start-btn {
+            background: var(--accent-teal);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        /* --- Content Layout --- */
+        .container {
+            display: flex;
+            margin-top: 70px; /* Space for fixed nav */
+            min-height: calc(100vh - 70px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: #1e293b;
+            padding: 30px 20px;
+            position: fixed;
+            height: 100%;
+            border-right: 1px solid #334155;
+        }
+
+        .sidebar h3 { color: var(--accent-teal); font-size: 1.2rem; }
+        
+        .sidebar ul { list-style: none; padding: 0; }
+        
+        .sidebar li { margin-bottom: 15px; }
+        
+        .sidebar a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover { color: white; }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 40px;
+            max-width: 900px;
+        }
+
+        section { margin-bottom: 60px; border-bottom: 1px solid #334155; padding-bottom: 40px; }
+
+        h2 { color: var(--accent-teal); font-size: 2rem; }
+
+        /* Code Block Styling */
+        .code-snippet {
+            background: #011627;
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+            margin: 20px 0;
+            border: 1px solid #1e293b;
+            overflow-x: auto;
+        }
+
+        pre { margin: 0; font-family: 'Fira Code', monospace; color: #d6deeb; }
+        
+        .keyword { color: #c792ea; } /* purple */
+        .class-name { color: #ffcb6b; } /* yellow */
+        .string { color: #ecc48d; } /* tan */
+        .comment { color: #637777; font-style: italic; }
+
+        .badge {
+            background: var(--accent-teal);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <strong>JanellaCult</strong>
+    <div>
+
+        <a class="start-btn" href="../index.html">Play Game</a>
+    </div>
+</nav>
+
+<div class="container">
+    <aside class="sidebar">
+        <h3>Java Basics</h3>
+        <ul>
+            <li><a href="#variables">1. Variables</a></li>
+            <li><a href="#data-types">2. Data Types</a></li>
+            <li><a href="#arrays">3. Arrays</a></li>
+            <li><a href="#loops">4. Loops</a></li>
+            <li><a href="#methods">5. Methods</a></li>
+            <li><a href="#classes">6. Classes & Objects</a></li>
+            <li><a href="#abstract">7. Abstract Classes</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <section id="variables">
+    <h2>Java Variables</h2>
+    <p>
+        Variables are containers used to store data values. In Java, every variable must have a data type.
+        This tells the program what kind of data the variable will hold.
+    </p>
+
+    <div class="code-snippet">
+        <span class="badge">Example</span>
+        <pre>
+<span class="keyword">int</span> age = <span class="string">18</span>;
+<span class="class-name">String</span> name = <span class="string">"Janella"</span>;
+<span class="class-name">System</span>.out.println(name + <span class="string">" is "</span> + age);
+        </pre>
+    </div>
+
+    <p>
+        Variables make programs flexible and reusable by allowing data to change during execution.
+    </p>
+</section>
+
+        <section id="data-types">
+    <h2>Java Data Types</h2>
+    <p>
+        Java is a statically typed language, which means variables must be declared with a data type.
+        Data types specify the size and type of values that can be stored.
+    </p>
+
+    <div class="code-snippet">
+        <span class="badge">Example</span>
+        <pre>
+<span class="keyword">int</span> number = <span class="string">100</span>;
+<span class="keyword">boolean</span> isActive = <span class="keyword">true</span>;
+<span class="class-name">double</span> price = <span class="string">99.99</span>;
+        </pre>
+    </div>
+
+    <p>
+        Common data types include <code>int</code>, <code>double</code>, <code>char</code>, <code>boolean</code>, and <code>String</code>.
+    </p>
+</section>
+
+        <section id="arrays">
+    <h2>Java Arrays</h2>
+    <p>
+        Arrays are used to store multiple values in a single variable.
+        All elements in an array must be of the same data type.
+    </p>
+
+    <div class="code-snippet">
+        <span class="badge">Example</span>
+        <pre>
+<span class="keyword">int</span>[] numbers = { <span class="string">10</span>, <span class="string">20</span>, <span class="string">30</span> };
+
+<span class="class-name">System</span>.out.println(numbers[<span class="string">0</span>]);
+<span class="class-name">System</span>.out.println(numbers.length);
+        </pre>
+    </div>
+
+    <p>
+        Array indexes start at zero. Arrays are commonly used with loops to process data efficiently.
+    </p>
+</section>
+
+       <section id="loops">
+    <h2>Java Loops</h2>
+    <p>
+        Loops are used to execute a block of code repeatedly as long as a condition is true.
+        Java provides several types of loops.
+    </p>
+
+    <div class="code-snippet">
+        <span class="badge">Example</span>
+        <pre>
+<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="string">0</span>; i < <span class="string">5</span>; i++) {
+    <span class="class-name">System</span>.out.println(i);
+}
+        </pre>
+    </div>
+
+    <p>
+        Common loops include <code>for</code>, <code>while</code>, and <code>do-while</code>.
+    </p>
+</section>
+
+<section id="methods">
+    <h2>Java Methods</h2>
+    <p>
+        Methods are blocks of code that perform a specific task.
+        They help reduce code repetition and improve program structure.
+    </p>
+
+    <div class="code-snippet">
+      <span class="badge">Example</span>
+        <pre>
+<span class="keyword">static</span> <span class="keyword">void</span> greet() {
+    <span class="class-name">System</span>.out.println(<span class="string">"Hello World"</span>);
+}
+        </pre>
+    </div>
+
+    <p>
+        Methods can accept parameters and return values.
+    </p>
+</section>
+
+<section id="classes">
+    <h2>Java Classes and Objects</h2>
+    <p>
+        Java is an object-oriented programming language.
+        Classes define objects, and objects are instances of classes.
+    </p>
+
+    <div class="code-snippet">
+        <span class="badge">Example</span>
+        <pre>
+<span class="keyword">class</span> Student {
+    <span class="keyword">int</span> id;
+}
+
+Student s = <span class="keyword">new</span> Student();
+s.id = <span class="string">1</span>;
+        </pre>
+    </div>
+
+    <p>
+        Objects allow programs to model real-world entities.
+    </p>
+</section>
+
+<section id="abstract">
+    <h2>Java Abstract Classes</h2>
+    <p>
+        An abstract class cannot be used to create objects.
+        It is designed to be inherited by other classes.
+    </p>
+
+    <div class="code-snippet">
+        <span class="badge">Example</span>
+        <pre>
+<span class="keyword">abstract</span> <span class="keyword">class</span> Animal {
+    <span class="keyword">abstract</span> <span class="keyword">void</span> sound();
+}
+
+<span class="keyword">class</span> Dog <span class="keyword">extends</span> Animal {
+    <span class="keyword">void</span> sound() {
+        <span class="class-name">System</span>.out.println(<span class="string">"Bark"</span>);
+    }
+}
+        </pre>
+    </div>
+
+    <p>
+        Abstract classes help enforce rules and structure in large programs.
+    </p>
+</section>
+
+    </main>
+</div>
+
+</body>
+</html>

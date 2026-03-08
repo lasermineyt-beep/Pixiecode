@@ -1,0 +1,53 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#0f172a" stroke="#22d3ee" stroke-width="2"/>
+  
+  <!-- Pixel grid pattern for "Pixie" -->
+  <!-- Top left pixel cluster (P) -->
+  <rect x="40" y="50" width="12" height="12" fill="#22d3ee"/>
+  <rect x="40" y="62" width="12" height="12" fill="#22d3ee"/>
+  <rect x="40" y="74" width="12" height="12" fill="#22d3ee"/>
+  <rect x="40" y="86" width="12" height="12" fill="#22d3ee"/>
+  <rect x="40" y="98" width="12" height="12" fill="#22d3ee"/>
+  <rect x="40" y="110" width="12" height="12" fill="#22d3ee"/>
+  
+  <rect x="52" y="50" width="12" height="12" fill="#22d3ee"/>
+  <rect x="64" y="50" width="12" height="12" fill="#22d3ee"/>
+  <rect x="52" y="62" width="12" height="12" fill="#22d3ee"/>
+  <rect x="64" y="62" width="12" height="12" fill="#22d3ee"/>
+  <rect x="52" y="74" width="12" height="12" fill="#22d3ee"/>
+  <rect x="52" y="86" width="12" height="12" fill="#22d3ee"/>
+  <rect x="64" y="86" width="12" height="12" fill="#22d3ee"/>
+  
+  <!-- Code brackets (< >) -->
+  <rect x="76" y="50" width="12" height="12" fill="#2ab1a1"/>
+  <rect x="76" y="62" width="12" height="12" fill="#2ab1a1"/>
+  <rect x="76" y="74" width="12" height="12" fill="#2ab1a1"/>
+  <rect x="76" y="86" width="12" height="12" fill="#2ab1a1"/>
+  <rect x="76" y="98" width="12" height="12" fill="#2ab1a1"/>
+  <rect x="76" y="110" width="12" height="12" fill="#2ab1a1"/>
+  
+  <rect x="112" y="50" width="12" height="12" fill="#2ab1a1"/>
+  <rect x="112" y="62" width="12" height="12" fill="#2ab1a1"/>
+  <rect x="112" y="74" width="12" height="12" fill="#2ab1a1"/>
+  <rect x="112" y="86" width="12" height="12" fill="#2ab1a1"/>
+  <rect x="112" y="98" width="12" height="12" fill="#2ab1a1"/>
+  <rect x="112" y="110" width="12" height="12" fill="#2ab1a1"/>
+  
+  <!-- Center code symbol -->
+  <rect x="88" y="74" width="12" height="12" fill="#fbbf24"/>
+  <rect x="100" y="74" width="12" height="12" fill="#fbbf24"/>
+  <rect x="88" y="86" width="12" height="12" fill="#fbbf24"/>
+  <rect x="100" y="86" width="12" height="12" fill="#fbbf24"/>
+  
+  <!-- Bottom section - decorative pixels -->
+  <rect x="52" y="122" width="12" height="12" fill="#22d3ee"/>
+  <rect x="64" y="122" width="12" height="12" fill="#22d3ee"/>
+  <rect x="76" y="122" width="12" height="12" fill="#2ab1a1"/>
+  <rect x="88" y="122" width="12" height="12" fill="#fbbf24"/>
+  <rect x="100" y="122" width="12" height="12" fill="#22d3ee"/>
+  <rect x="112" y="122" width="12" height="12" fill="#2ab1a1"/>
+  
+  <!-- Text label -->
+  <text x="100" y="160" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#22d3ee" text-anchor="middle">PIXIECODE</text>
+</svg>

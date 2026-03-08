@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixiecode | Learn Java</title>
+    <style>
+        :root {
+            --primary-blue: rgba(17, 41, 160, 0.9);
+            --accent-teal: #2ab1a1ff;
+            --dark-bg: #0f172a;
+            --code-bg: #1e293b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: #e2e8f0;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* --- Your Nav CSS --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--primary-blue);
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 40px;
+            z-index: 1000;
+            box-sizing: border-box;
+            align-items: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 12px;
+            font-size: 14px;
+        }
+
+        .start-btn {
+            background: var(--accent-teal);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        /* --- Content Layout --- */
+        .container {
+            display: flex;
+            margin-top: 70px; /* Space for fixed nav */
+            min-height: calc(100vh - 70px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: #1e293b;
+            padding: 30px 20px;
+            position: fixed;
+            height: 100%;
+            border-right: 1px solid #334155;
+        }
+
+        .sidebar h3 { color: var(--accent-teal); font-size: 1.2rem; }
+        
+        .sidebar ul { list-style: none; padding: 0; }
+        
+        .sidebar li { margin-bottom: 15px; }
+        
+        .sidebar a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover { color: white; }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 40px;
+            max-width: 900px;
+        }
+
+        section { margin-bottom: 60px; border-bottom: 1px solid #334155; padding-bottom: 40px; }
+
+        h2 { color: var(--accent-teal); font-size: 2rem; }
+
+        /* Code Block Styling */
+        .code-snippet {
+            background: #011627;
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+            margin: 20px 0;
+            border: 1px solid #1e293b;
+            overflow-x: auto;
+        }
+
+        pre { margin: 0; font-family: 'Fira Code', monospace; color: #d6deeb; }
+        
+        .keyword { color: #c792ea; } /* purple */
+        .class-name { color: #ffcb6b; } /* yellow */
+        .string { color: #ecc48d; } /* tan */
+        .comment { color: #637777; font-style: italic; }
+
+        .badge {
+            background: var(--accent-teal);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <strong>Pixiecode</strong>
+    <div>
+
+        <a class="start-btn" href="../../index.html">Play Game</a>
+    </div>
+</nav>
+
+<div class="container">
+    <aside class="sidebar">
+        <h3>Java Basics</h3>
+        <ul>
+            <li><a href="#variables">1. Variables</a></li>
+            <li><a href="#data-types">2. Data Types</a></li>
+            <li><a href="#operators">3. Operators</a></li>
+            <li><a href="#strings">4. Strings</a></li>
+            <li><a href="#conditionals">5. Conditionals</a></li>
+            <li><a href="#loops">6. Loops</a></li>
+            <li><a href="#arrays">7. Arrays</a></li>
+            <li><a href="#methods">8. Methods</a></li>
+            <li><a href="#classes">9. Classes & Objects</a></li>
+            <li><a href="#inheritance">10. Inheritance</a></li>
+            <li><a href="#polymorphism">11. Polymorphism</a></li>
+            <li><a href="#encapsulation">12. Encapsulation</a></li>
+            <li><a href="#abstract">13. Abstract Classes</a></li>
+            <li><a href="#interfaces">14. Interfaces</a></li>
+            <li><a href="#exceptions">15. Exception Handling</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <section id="variables">
+    <h2>Java Variables</h2>
+    <p>
+        Variables are containers used to store data values. In Java, every variable must have a data type.
+        This tells the program what kind of data the variable will hold.
+    </p>
+
+    <div class="code-snippet">
+        <span class="badge">Example</span>
+        <pre>
+<span class="keyword">int</span> age = <span class="string">18</span>;
+<span class="class-name">String</span> name = <span class="string">"Janella"</span>;
+<span class="class-name">System</span>.out.println(name + <span class="string">" is "</span> + age);
+        </pre>
+    </div>
+
+    <p>
+        Variables make programs flexible and reusable by allowing data to change during execution.
+    </p>
+</section>
+
+        <section id="data-types">
+    <h2>Java Data Types</h2>
+    <p>
+        Java is a statically typed language, which means variables must be declared with a data type.
+        Data types specify the size and type of values that can be stored.
+    </p>
+
+    <div class="code-snippet">
+        <span class="badge">Example</span>
+        <pre>
+<span class="keyword">int</span> number = <span class="string">100</span>;
+<span class="keyword">boolean</span> isActive = <span class="keyword">true</span>;
+<span class="class-name">double</span> price = <span class="string">99.99</span>;
+        </pre>
+    </div>
+
+    <p>
+        Common data types include <code>int</code>, <code>double</code>, <code>char</code>, <code>boolean</code>, and <code>String</code>.
+    </p>
+</section>
+
+        <section id="arrays">
+    <h2>Java Arrays</h2>
+    <p>
+        Arrays are used to store multiple values in a single variable.
+        All elements in an array must be of the same data type.
+    </p>
+
+    <div class="code-snippet">
+        <span class="badge">Example</span>
+        <pre>
+<span class="keyword">int</span>[] numbers = { <span class="string">10</span>, <span class="string">20</span>, <span class="string">30</span> };
+
+<span class="class-name">System</span>.out.println(numbers[<span class="string">0</span>]);
+<span class="class-name">System</span>.out.println(numbers.length);
+        </pre>
+    </div>
+
+    <p>
+        Array indexes start at zero. Arrays are commonly used with loops to process data efficiently.
+    </p>
+</section>
+
+       <section id="loops">
+    <h2>Java Loops</h2>
+    <p>
+        Loops are used to execute a block of code repeatedly as long as a condition is true.
+        Java provides several types of loops.
+    </p>
+
+    <div class="code-snippet">
+        <span class="badge">Example</span>
+        <pre>
+<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="string">0</span>; i < <span class="string">5</span>; i++) {
+    <span class="class-name">System</span>.out.println(i);
+}
+        </pre>
+    </div>
+
+    <p>
+        Common loops include <code>for</code>, <code>while</code>, and <code>do-while</code>.
+    </p>
+</section>
+
+<section id="methods">
+    <h2>Java Methods</h2>
+    <p>
+        Methods are blocks of code that perform a specific task.
+        They help reduce code repetition and improve program structure.
+    </p>
+
+    <div class="code-snippet">
+      <span class="badge">Example</span>
+        <pre>
+<span class="keyword">static</span> <span class="keyword">void</span> greet() {
+    <span class="class-name">System</span>.out.println(<span class="string">"Hello World"</span>);
+}
+        </pre>
+    </div>
+
+    <p>
+        Methods can accept parameters and return values.
+    </p>
+</section>
+
+<section id="classes">
+    <h2>Java Classes and Objects</h2>
+    <p>
+        Java is an object-oriented programming language.
+        Classes define objects, and objects are instances of classes.
+    </p>
+
+    <div class="code-snippet">
+        <span class="badge">Example</span>
+        <pre>
+<span class="keyword">class</span> Student {
+    <span class="keyword">int</span> id;
+}
+
+Student s = <span class="keyword">new</span> Student();
+s.id = <span class="string">1</span>;
+        </pre>
+    </div>
+
+    <p>
+        Objects allow programs to model real-world entities.
+    </p>
+</section>
+
+<section id="operators">
+    <h2>Java Operators</h2>
+    <p>
+        Operators are used to perform operations on variables and values. Java has several types of operators including arithmetic, assignment, comparison, and logical operators.
+    </p>
+
+    <div class="code-snippet">
+        <span class="badge">Example</span>
+        <pre>
+<span class="keyword">int</span> x = <span class="string">10</span>;
+<span class="keyword">int</span> y = <span class="string">5</span>;
+
+<span class="class-name">System</span>.out.println(x + y);  <span class="comment">// Addition: 15</span>
+<span class="class-name">System</span>.out.println(x - y);  <span class="comment">// Subtraction: 5</span>
+<span class="class-name">System</span>.out.println(x * y);  <span class="comment">// Multiplication: 50</span>
+<span class="class-name">System</span>.out.println(x / y);  <span class="comment">// Division: 2</span>
+<span class="class-name">System</span>.out.println(x % y);  <span class="comment">// Modulus: 0</span>
+        </pre>
+    </div>
+
+    <p>
+        Operators are essential for performing calculations and comparisons in your code.
+    </p>
+</section>
+
+<section id="strings">
+    <h2>Java Strings</h2>
+    <p>
+        Strings are used for storing text. A String variable contains a collection of characters surrounded by double quotes.
+    </p>
+
+    <div class="code-snippet">
+        <span class="badge">Example</span>
+        <pre>
+<span class="class-name">String</span> greeting = <span class="string">"Hello World"</span>;
+<span class="class-name">System</span>.out.println(greeting);
+
+<span class="class-name">String</span> name = <span class="string">"John"</span>;
+<span class="class-name">String</span> age = <span class="string">"25"</span>;
+<span class="class-name">System</span>.out.println(name + <span class="string">" is "</span> + age);
+        </pre>
+    </div>
+
+    <p>
+        Strings have many useful methods like <code>length()</code>, <code>toUpperCase()</code>, <code>toLowerCase()</code>, and <code>indexOf()</code>.
+    </p>
+</section>
+
+<section id="conditionals">
+    <h2>Java Conditionals (if...else)</h2>
+    <p>
+        Conditional statements are used to perform different actions based on different conditions. Use <code>if</code> to specify a block of code to be executed if a condition is true.
+    </p>
+
+    <div class="code-snippet">
+        <span class="badge">Example</span>
+        <pre>
+<span class="keyword">int</span> age = <span class="string">18</span>;
+
+<span class="keyword">if</span> (age >= <span class="string">18</span>) {
+    <span class="class-name">System</span>.out.println(<span class="string">"You are an adult"</span>);
+} <span class="keyword">else</span> {
+    <span class="class-name">System</span>.out.println(<span class="string">"You are a minor"</span>);
+}
+        </pre>
+    </div>
+
+    <p>
+        You can also use <code>else if</code> to specify multiple conditions.
+    </p>
+</section>
+
+<section id="inheritance">
+    <h2>Java Inheritance</h2>
+    <p>
+        Inheritance allows a class to inherit properties and methods from another class. The class that inherits is called a subclass, and the class being inherited from is called a superclass.
+    </p>
+
+    <div class="code-snippet">
+        <span class="badge">Example</span>
+        <pre>
+<span class="keyword">class</span> Animal {
+    <span class="keyword">void</span> eat() {
+        <span class="class-name">System</span>.out.println(<span class="string">"Eating..."</span>);
+    }
+}
+
+<span class="keyword">class</span> Dog <span class="keyword">extends</span> Animal {
+    <span class="keyword">void</span> bark() {
+        <span class="class-name">System</span>.out.println(<span class="string">"Woof!"</span>);
+    }
+}
+        </pre>
+    </div>
+
+    <p>
+        Inheritance promotes code reusability and establishes a relationship between classes.
+    </p>
+</section>
+
+<section id="polymorphism">
+    <h2>Java Polymorphism</h2>
+    <p>
+        Polymorphism means "many forms". It occurs when we have many classes that are related to each other by inheritance. It allows you to write code that can work with objects of multiple types.
+    </p>
+
+    <div class="code-snippet">
+        <span class="badge">Example</span>
+        <pre>
+<span class="keyword">class</span> Animal {
+    <span class="keyword">void</span> sound() {
+        <span class="class-name">System</span>.out.println(<span class="string">"Some sound"</span>);
+    }
+}
+
+<span class="keyword">class</span> Dog <span class="keyword">extends</span> Animal {
+    <span class="keyword">void</span> sound() {
+        <span class="class-name">System</span>.out.println(<span class="string">"Woof"</span>);
+    }
+}
+
+<span class="keyword">class</span> Cat <span class="keyword">extends</span> Animal {
+    <span class="keyword">void</span> sound() {
+        <span class="class-name">System</span>.out.println(<span class="string">"Meow"</span>);
+    }
+}
+        </pre>
+    </div>
+
+    <p>
+        Polymorphism allows the same method to behave differently for different objects.
+    </p>
+</section>
+
+<section id="encapsulation">
+    <h2>Java Encapsulation</h2>
+    <p>
+        Encapsulation is the bundling of data (variables) and methods into a single unit called a class. It is one of the four fundamental OOP concepts. The idea is to hide the internal details and only expose what is necessary.
+    </p>
+
+    <div class="code-snippet">
+        <span class="badge">Example</span>
+        <pre>
+<span class="keyword">public</span> <span class="keyword">class</span> Person {
+    <span class="keyword">private</span> <span class="class-name">String</span> name;
+    
+    <span class="keyword">public</span> <span class="class-name">String</span> getName() {
+        <span class="keyword">return</span> name;
+    }
+    
+    <span class="keyword">public</span> <span class="keyword">void</span> setName(<span class="class-name">String</span> name) {
+        <span class="keyword">this</span>.name = name;
+    }
+}
+        </pre>
+    </div>
+
+    <p>
+        Use <code>private</code> to restrict access and <code>public</code> getter/setter methods to control access to data.
+    </p>
+</section>
+
+<section id="abstract">
+    <h2>Java Abstract Classes</h2>
+    <p>
+        An abstract class cannot be used to create objects. It is designed to be inherited by other classes. Abstract classes can contain abstract methods (methods without a body) and regular methods.
+    </p>
+
+    <div class="code-snippet">
+        <span class="badge">Example</span>
+        <pre>
+<span class="keyword">abstract</span> <span class="keyword">class</span> Animal {
+    <span class="keyword">abstract</span> <span class="keyword">void</span> sound();
+}
+
+<span class="keyword">class</span> Dog <span class="keyword">extends</span> Animal {
+    <span class="keyword">void</span> sound() {
+        <span class="class-name">System</span>.out.println(<span class="string">"Bark"</span>);
+    }
+}
+        </pre>
+    </div>
+
+    <p>
+        Abstract classes help enforce rules and structure in large programs.
+    </p>
+</section>
+
+<section id="interfaces">
+    <h2>Java Interfaces</h2>
+    <p>
+        An interface is a completely abstract class that is used to group related methods with empty bodies. Interfaces specify what a class should do, but not how it should do it.
+    </p>
+
+    <div class="code-snippet">
+        <span class="badge">Example</span>
+        <pre>
+<span class="keyword">interface</span> Animal {
+    <span class="keyword">void</span> eat();
+    <span class="keyword">void</span> sleep();
+}
+
+<span class="keyword">class</span> Dog <span class="keyword">implements</span> Animal {
+    <span class="keyword">public</span> <span class="keyword">void</span> eat() {
+        <span class="class-name">System</span>.out.println(<span class="string">"Dog eats"</span>);
+    }
+    
+    <span class="keyword">public</span> <span class="keyword">void</span> sleep() {
+        <span class="class-name">System</span>.out.println(<span class="string">"Dog sleeps"</span>);
+    }
+}
+        </pre>
+    </div>
+
+    <p>
+        A class can implement multiple interfaces, allowing for flexible code design.
+    </p>
+</section>
+
+<section id="exceptions">
+    <h2>Java Exception Handling</h2>
+    <p>
+        Exception handling is used to handle errors gracefully. When an error occurs, Java throws an exception. You can catch and handle exceptions using try-catch blocks.
+    </p>
+
+    <div class="code-snippet">
+        <span class="badge">Example</span>
+        <pre>
+<span class="keyword">try</span> {
+    <span class="keyword">int</span> result = <span class="string">10</span> / <span class="string">0</span>;
+} <span class="keyword">catch</span> (<span class="class-name">ArithmeticException</span> e) {
+    <span class="class-name">System</span>.out.println(<span class="string">"Cannot divide by zero!"</span>);
+} <span class="keyword">finally</span> {
+    <span class="class-name">System</span>.out.println(<span class="string">"This always executes"</span>);
+}
+        </pre>
+    </div>
+
+    <p>
+        The <code>finally</code> block always executes, whether an exception occurs or not.
+    </p>
+</section>
+
+    </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Debug Challenge</title>
+<style>
+
+body {
+  margin:0;
+  font-family:"Segoe UI",sans-serif;
+  background:#0b1020;
+  color:white
+}
+
+.container {
+  max-width:800px;
+  margin:auto;
+  padding:55px
+}
+
+.game {
+  background: #020617;
+  padding:25px;
+  border-radius:18px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.5);
+  border:1px solid #1e293b;
+}
+
+input {
+  width:100%;
+  padding:10px;
+  border-radius:11px;
+  border:none;
+  background:#0f172a;
+  color:white;
+}
+
+button {
+  padding:10px 16px;
+  border:none;
+  border-radius:10px;
+  background: #2ab1a1;
+  color:white;
+  font-weight:bold;
+  margin-top:10px;
+  cursor:pointer;
+  margin-right:10px;
+  transition:0.3s;
+}
+
+button:hover {
+  background:#22d3ee;
+}
+
+.timer {
+  font-size:22px;
+  color: #22d3ee;
+}
+
+.hint {
+  color: #94a3b8;
+}
+
+.topbar {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+
+.level {
+  font-weight:bold;
+}
+
+.home {
+  background: #22c55e;
+}
+
+.home:hover {
+  background:#16a34a;
+}
+
+.tries {
+  color: #fbbf24;
+  font-size:16px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #0f172a;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #22d3ee 0%, #2ab1a1 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+.result-box {
+  background: #0f172a;
+  padding:20px;
+  border-radius:18px;
+  text-align:center;
+  margin-top:20px;
+  border:1px solid #1e293b;
+}
+
+.progress {
+  font-size:16px;
+  margin-bottom:10px;
+}
+
+nav {
+  position: fixed;
+  top: 0;width: 96%;
+  background: rgba(17, 41, 160, 0.9);
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 40px;z-index: 1000;
+
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  margin: 0 12px;
+  font-size: 14px;
+  
+}
+
+</style>
+</head>
+<body>
+
+<nav>
+  <strong>Pixiecode</strong>
+  <div><a href="/index.html">Home</a></div>
+</nav>
+
+<div class="container">
+  <div class="topbar">
+    <div class="level">Level: <span id="level">1</span></div>
+  </div>
+
+  <div class="game" id="gameSection">
+    <div class="timer">Time left: <span id="time">30</span>s</div>
+    <p class="tries">Wrong attempts this question: <span id="tries">0</span>/3</p>
+    <p class="progress">Question: <span id="questionCount">1</span>/<span id="totalQuestions">60</span></p>    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>    <h3 id="question"></h3>
+    <pre id="code"></pre>
+    <input id="answer" placeholder="Type answer here">
+    <br>
+    <button onclick="check()">Submit</button>
+    <button onclick="giveUp()">Give Up</button>
+    <p id="result"></p>
+    <p class="hint" id="hint"></p>
+  </div>
+
+  <div id="finalResult" class="result-box" style="display:none;">
+    <h2>🏆 Challenge Completed!</h2>
+    <p>Total Questions Answered: <span id="totalAnswered">0</span></p>
+    <p>Total Wrong Attempts: <span id="totalWrong">0</span></p>
+    <p>Total Score: <span id="totalScore">0</span></p>
+    <button onclick="goHome()">Back to Home</button>
+  </div>
+</div>
+
+<script>
+// ====== Sound Effects ======
+function playSuccessSound() {
+  try {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
+    oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1); // E5
+    oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2); // G5
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+  } catch(e) {
+    // Fallback: no sound if Web Audio API not supported
+  }
+}
+
+function playFailureSound() {
+  try {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(392, audioContext.currentTime); // G4
+    oscillator.frequency.setValueAtTime(330, audioContext.currentTime + 0.1); // E4
+    oscillator.frequency.setValueAtTime(262, audioContext.currentTime + 0.2); // C4
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+  } catch(e) {
+    // Fallback: no sound if Web Audio API not supported
+  }
+}
+
+// ====== Variables ======
+let timer;
+let timeLeft = 30;
+let current;
+let tries = 0;
+let totalWrong = 0;
+let totalScore = 0;
+let totalAnswered = 0;
+let questionAnswered = false;
+let isInGameSession = false; // Track if user is actively playing
+
+// ====== Warning for leaving during game ======
+window.addEventListener('beforeunload', function(e) {
+  if (isInGameSession) {
+    e.preventDefault();
+    e.returnValue = 'You are currently answering a question. Are you sure you want to leave? Your progress will be lost!';
+    return e.returnValue;
+  }
+});
+
+// ====== Questions ======
+const baseChallenges = [
+  {q:"int[] nums = _____ int[10];", a:"new", h:"Keyword to allocate memory for an array."},
+  {q:"for(int i = 0; i _____ arr.length; i++)", a:"<", h:"Comparison operator to stay within array bounds."},
+  {q:"public _____ class Vehicle { }", a:"abstract", h:"Keyword for a class that cannot be instantiated."},
+  {q:"while(_____)", a:"true", h:"Value used to create an infinite loop."},
+  {q:"interface Playable { _____ play(); }", a:"void", h:"The standard return type for an action method."},
+  {q:"int x = arr[_____];", a:"0", h:"The index of the first element in any array."},
+  {q:"for(String s _____ names)", a:":", h:"Separator used in an enhanced for-each loop."},
+  {q:"public abstract _____ calculate();", a:"void", h:"Method signature that has no body/implementation."},
+  {q:"if(i == 5) _____ ; // skip to next", a:"continue", h:"Keyword to skip the current loop iteration."},
+  {q:"class Car _____ Vehicle { }", a:"extends", h:"Keyword for inheritance from a class."},
+  {q:"int len = matrix._____;", a:"length", h:"Property to get the number of rows in a 2D array."},
+  {q:"do { ... } _____ (x < 10);", a:"while", h:"Keyword required at the end of a do-loop."},
+  {q:"class Robot _____ Actionable { }", a:"implements", h:"Keyword for a class using an interface."},
+  {q:"int last = arr[arr.length _____ 1];", a:"-", h:"Operator used to access the final index."},
+  {q:"for(int i=10; i > 0; _____%2D%2D)", a:"i", h:"The decrement step in a countdown loop."},
+  {q:"public _____ void msg() { }", a:"default", h:"Keyword for an interface method with a body."},
+  {q:"arr[2] = _____;", a:"50", h:"Assigning an integer value to an array index."},
+  {q:"if(found) _____; // exit loop", a:"break", h:"Keyword to stop a loop immediately."},
+  {q:"@_____", a:"Override", h:"Annotation for implementing an abstract method."},
+  {q:"int[][] grid = _____ int[3][3];", a:"new", h:"Keyword to initialize a multi-dimensional array."},
+  {q:"while(sc._____())", a:"hasNext", h:"Scanner method to check for more input."},
+  {q:"Shape s = _____ Circle();", a:"new", h:"Creating a concrete object of an abstract type."},
+  {q:"for(_____; ; ) { } // infinite", a:";", h:"The required separators in a for-loop header."},
+  {q:"interface methods are _____ by default.", a:"public", h:"The access level of all interface members."},
+  {q:"int val = matrix[0][_____];", a:"0", h:"Accessing the first column of the first row."}
+];
+
+// Duplicate
+let fullChallenges = [];
+for(let i=0;i<1;i++) fullChallenges.push(...baseChallenges);
+
+// Shuffle questions
+function shuffleArray(array){
+  for(let i=array.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+shuffleArray(fullChallenges);
+
+// Set total questions
+const totalQuestions = fullChallenges.length;
+document.getElementById("totalQuestions").innerText = totalQuestions;
+
+// ====== Load Question ======
+function loadChallenge(){
+  if(fullChallenges.length === 0){
+    isInGameSession = false; // Game completed
+    showFinalResult();
+    return;
+  }
+
+  questionAnswered = false; // reset
+  isInGameSession = true; // User is now actively playing
+  current = fullChallenges[0];
+  tries = 0;
+
+  document.getElementById("tries").innerText = tries;
+  document.getElementById("question").innerText = current.q;
+  document.getElementById("code").innerText = current.code || "";
+  document.getElementById("hint").innerText = "Hint: " + current.h;
+  document.getElementById("answer").value = "";
+  document.getElementById("result").innerText = "";
+
+  document.getElementById("questionCount").innerText = totalQuestions - fullChallenges.length + 1;
+
+  // Update progress bar
+  const currentQuestion = totalQuestions - fullChallenges.length + 1;
+  const progressPercent = ((currentQuestion - 1) / totalQuestions) * 100;
+  document.getElementById("progress-fill").style.width = progressPercent + "%";
+
+  startTimer();
+}
+
+// ====== Timer ======
+function startTimer(){
+  clearInterval(timer);
+  let t = timeLeft;
+  document.getElementById("time").innerText = t;
+
+  timer = setInterval(()=>{
+    t--;
+    document.getElementById("time").innerText = t;
+    if(t <= 0){
+      clearInterval(timer);
+      if(!questionAnswered) totalWrong +=1;
+      playFailureSound();
+      isInGameSession = false; // Question timed out
+      fullChallenges.shift();
+      loadChallenge();
+    }
+  },1000);
+}
+
+// ====== Check Answer ======
+function check(){
+  let user = document.getElementById("answer").value.trim();
+
+  if(user === current.a){
+    let questionScore = Number(document.getElementById("time").innerText);
+    totalScore += questionScore;
+    questionAnswered = true;
+    totalAnswered++;
+    if(tries>0) totalWrong +=1;
+
+    clearInterval(timer);
+    document.getElementById("result").innerText = "✅ Correct!";
+    playSuccessSound();
+    isInGameSession = false; // Question completed
+
+    setTimeout(()=>{
+      fullChallenges.shift();
+      loadChallenge();
+    },1500);
+
+  } else {
+    tries++;
+    document.getElementById("tries").innerText = tries;
+    if(tries >=3){
+      questionAnswered = true;
+      totalWrong += 1;
+      totalAnswered++;
+      clearInterval(timer);
+      document.getElementById("result").innerText = "📌 Correct Answer: "+current.a+" — moving to next question...";
+      playFailureSound();
+      isInGameSession = false; // Question completed (failed)
+
+      setTimeout(()=>{
+        fullChallenges.shift();
+        loadChallenge();
+      },2000);
+    } else {
+      document.getElementById("result").innerText = "❌ Wrong! Try again";
+      playFailureSound();
+    }
+  }
+}
+
+function giveUp(){
+  clearInterval(timer);
+  if(!questionAnswered) totalWrong +=1;
+  isInGameSession = false; // User gave up
+  showFinalResult();
+}
+
+function showFinalResult(){
+  clearInterval(timer);
+  document.getElementById("gameSection").style.display="none";
+  document.getElementById("finalResult").style.display="block";
+  document.getElementById("totalAnswered").innerText = totalAnswered;
+  document.getElementById("totalWrong").innerText = totalWrong;
+  document.getElementById("totalScore").innerText = totalScore;
+
+  // Save score
+  const user = localStorage.getItem("loggedInUser");
+  if(user){
+    const users = JSON.parse(localStorage.getItem('users') || '{}');
+    if(users[user]){
+      const previousScore = users[user].scores.easy || 0;
+      users[user].scores.easy = Math.max(users[user].scores.easy, totalScore);
+      users[user].challenges += 1;
+      // Update level based on score
+      if(totalScore > 500) users[user].level = 'Intermediate';
+      if(totalScore > 1000) users[user].level = 'Advanced';
+
+      // Add activity
+      if(!users[user].activities) users[user].activities = [];
+      users[user].activities.unshift({
+        type: 'easy',
+        game: 'Syntax Error - Game Level 1',
+        score: totalScore,
+        timestamp: new Date().toISOString(),
+        improved: totalScore > previousScore
+      });
+      // Keep only last 10 activities
+      users[user].activities = users[user].activities.slice(0, 10);
+
+      localStorage.setItem('users', JSON.stringify(users));
+    }
+  }
+}
+
+// ====== Go Home ======
+function goHome(){
+  window.location.href = "/index.html";
+}
+
+loadChallenge();
+</script>
+
+</body>
+</html>

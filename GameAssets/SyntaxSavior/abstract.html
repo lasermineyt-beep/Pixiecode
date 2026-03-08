@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JanellaCult | Array Debugging Game</title>
+<style>
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0f172a;
+    color: white;
+    margin: 0;
+    padding-top: 80px;
+}
+
+/* Nav */
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 96%;
+    background: rgba(17, 41, 160, 0.9);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 40px;
+    z-index: 1000;
+}
+nav a { 
+  color: white; 
+  text-decoration: none;
+   margin: 0 12px; 
+   font-size: 14px; 
+
+ }
+
+.start-btn { 
+  background: #2ab1a1ff; 
+  padding: 8px 16px; 
+  border-radius: 6px; 
+  font-weight: bold; 
+
+}
+
+/* Game Layout */
+.game-container { 
+  max-width: 900px; 
+  margin: 0 auto; 
+  padding: 20px; 
+
+}
+
+.level-info { 
+  background: #1e293b; 
+  padding: 20px; border-radius: 8px; 
+  margin-bottom: 20px; 
+  border-left: 5px solid #2ab1a1ff; 
+
+}
+.editor-container { 
+  background: #282c34; 
+  border-radius: 8px; 
+  overflow: hidden; 
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+
+}
+
+.editor-header { 
+  background: #21252b; 
+  padding: 10px 20px; 
+  font-family: monospace; 
+  font-size: 13px; color: #abb2bf; 
+  display: flex; justify-content: space-between; 
+
+}
+
+#code-editor { 
+  counter-reset: line; 
+  padding: 20px; 
+  background:#282c34; color:#e06c75; 
+  font-family:'Courier New', monospace; 
+  font-size:16px; 
+  overflow:auto; 
+  border:none; 
+  border-radius:8px; 
+  white-space:pre;
+  line-height:1.5; 
+
+}
+
+#code-editor div { 
+  counter-increment: line; 
+  position: relative; 
+  padding-left:40px; 
+
+}
+
+#code-editor div::before { 
+  content: counter(line); 
+  position:absolute; 
+  left:10px; 
+  color:#565c64; 
+
+}
+
+.controls { 
+  display:flex; 
+  gap:15px; 
+  margin-top:20px; 
+
+}
+
+button { 
+  cursor:pointer; 
+  padding:12px 24px; 
+  border:none; 
+  border-radius:4px; 
+  font-weight:bold; 
+  transition:0.3s; 
+
+}
+
+.btn-run { 
+  background: #2ab1a1ff; 
+  color: white;
+
+} 
+
+.btn-run:hover { 
+  background:#239487; 
+
+}
+
+.btn-skip { 
+  background:#d97706; 
+  color:white; 
+
+} 
+.btn-skip:hover { 
+  background:#b45309; 
+
+}
+
+#message { 
+  margin-top:20px; 
+  padding:15px; 
+  border-radius:4px; 
+  display:none; 
+
+}
+.success { 
+  background:#065f46; 
+  color:#a7f3d0; 
+  border:1px solid #059669; 
+
+}
+
+.error { 
+  background:#7f1d1d; 
+  color:#fecaca; 
+  border:1px solid #dc2626; }
+
+/* Solution Box */
+#solution-box {
+    background:#1e293b;
+    border-left:5px solid #2ab1a1ff;
+    padding:15px;
+    border-radius:8px;
+    color:white;
+    font-family:'Courier New', monospace;
+    font-size:16px;
+    white-space:pre;
+    overflow-x:auto;
+    margin-top:15px;
+
+}
+
+.solution-highlight { 
+  color:#98c379; 
+  font-weight:bold; 
+  
+  }
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #0f172a;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 15px 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #22d3ee 0%, #2ab1a1 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+</style>
+</head>
+<body>
+
+<nav>
+    <strong>JanellaCult</strong>
+    <div>
+        <a href="/index.html">Home</a>
+    </div>
+</nav>
+
+<div class="game-container">
+    <div class="level-info">
+        <h2 id="level-title">Level 1: The Missing Piece</h2>
+        <p id="level-desc">Java lines must always end with a specific character. Fix the code to print "Hello World".</p>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+    </div>
+
+    <div class="editor-container">
+        <div class="editor-header">
+            <span>Main.java</span>
+            <span>Language: Java</span>
+        </div>
+        <pre id="code-editor" contenteditable="true" spellcheck="false"></pre>
+    </div>
+
+    <div class="controls">
+        <button class="btn-run" onclick="checkCode()">Run Code (Compile)</button>
+        <button class="btn-skip" onclick="skipLevel()">Skip Level</button>
+    </div>
+
+    <div id="message"></div>
+    <div id="solution-box" style="display:none;"></div>
+</div>
+
+<script>
+const levels = [
+
+// ====== Sound Effects ======
+function playSuccessSound() {
+  try {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
+    oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1); // E5
+    oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2); // G5
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+  } catch(e) {
+    // Fallback: no sound if Web Audio API not supported
+  }
+}
+
+function playFailureSound() {
+  try {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(392, audioContext.currentTime); // G4
+    oscillator.frequency.setValueAtTime(330, audioContext.currentTime + 0.1); // E4
+    oscillator.frequency.setValueAtTime(262, audioContext.currentTime + 0.2); // C4
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+  } catch(e) {
+    // Fallback: no sound if Web Audio API not supported
+  }
+}
+{
+title:"Abstract 1: Abstract Method",
+desc:"Fix the abstract method declaration.",
+initialCode:'abstract class Shape {\n  void draw();\n}',
+solution:'abstract void draw();',
+solutionFull:'abstract class Shape {\n  abstract void draw();\n}',
+hint:"Abstract methods need 'abstract' keyword."
+},
+{
+title:"Abstract 2: Implement Abstract",
+desc:"Fix method implementation in subclass.",
+initialCode:'abstract class Shape {\n  abstract void draw();\n}\nclass Circle extends Shape {\n  void draw {\n    System.out.println("Circle");\n  }\n}',
+solution:'void draw() {',
+solutionFull:'abstract class Shape {\n  abstract void draw();\n}\nclass Circle extends Shape {\n  void draw() {\n    System.out.println("Circle");\n  }\n}',
+hint:"Add parentheses () for method signature."
+},
+{
+title:"Abstract 3: Cannot Instantiate",
+desc:"Fix instantiation of abstract class.",
+initialCode:'abstract class Shape {}\npublic class Main {\n  public static void main(String[] args) {\n    Shape s = new Shape();\n  }\n}',
+solution:'Cannot instantiate abstract class',
+solutionFull:'abstract class Shape {}\npublic class Main {\n  public static void main(String[] args) {\n    // Shape s = new Shape(); // Cannot instantiate abstract class\n  }\n}',
+hint:"Abstract classes cannot be instantiated directly."
+},
+{
+title:"Abstract 4: Constructor in Abstract",
+desc:"Fix constructor syntax in abstract class.",
+initialCode:'abstract class Shape {\n  Shape(){\n    System.out.println("Shape");\n  }\n}',
+solution:'Shape() {',
+solutionFull:'abstract class Shape {\n  Shape() {\n    System.out.println("Shape");\n  }\n}',
+hint:"Constructor syntax is correct without abstract keyword."
+},
+{
+title:"Abstract 5: Override Abstract",
+desc:"Fix method override in subclass.",
+initialCode:'abstract class Shape {\n  abstract void draw();\n}\nclass Square extends Shape {\n  void Draw(){\n    System.out.println("Square");\n  }\n}',
+solution:'void draw() {',
+solutionFull:'abstract class Shape {\n  abstract void draw();\n}\nclass Square extends Shape {\n  void draw() {\n    System.out.println("Square");\n  }\n}',
+hint:"Method name must match exactly (case sensitive)."
+},
+{
+title:"Abstract 6: Abstract Field Error",
+desc:"Fix declaration of field in abstract class.",
+initialCode:'abstract class Vehicle {\n  int speed;\n  abstract int maxSpeed = 100;\n}',
+solution:'Cannot assign value to abstract',
+solutionFull:'abstract class Vehicle {\n  int speed;\n  final int maxSpeed = 100; // abstract fields cannot have values\n}',
+hint:"Abstract methods, not fields, use abstract keyword."
+},
+{
+title:"Abstract 7: Multiple Abstract Methods",
+desc:"Fix multiple abstract methods declaration.",
+initialCode:'abstract class Machine {\n  void start();\n  void stop();\n}',
+solution:'abstract void',
+solutionFull:'abstract class Machine {\n  abstract void start();\n  abstract void stop();\n}',
+hint:"Add abstract keyword to all methods."
+},
+{
+title:"Abstract 8: Subclass Must Implement",
+desc:"Fix subclass missing implementation.",
+initialCode:'abstract class Animal {\n  abstract void makeSound();\n}\nclass Dog extends Animal {}',
+solution:'Dog must implement makeSound()',
+solutionFull:'abstract class Animal {\n  abstract void makeSound();\n}\nclass Dog extends Animal {\n  void makeSound() {\n    System.out.println("Woof");\n  }\n}',
+hint:"Subclass must implement all abstract methods."
+},
+{
+title:"Abstract 9: Abstract with Main",
+desc:"Fix abstract class with main method.",
+initialCode:'abstract class Test {\n  public static void main(String[] args) {\n    System.out.println("Hello");\n  }\n}',
+solution:'No fix needed for main',
+solutionFull:'abstract class Test {\n  public static void main(String[] args) {\n    System.out.println("Hello");\n  }\n}',
+hint:"Abstract classes can have static main method."
+},
+{
+title:"Abstract 10: Abstract Constructor Call",
+desc:"Fix calling constructor of abstract class from subclass.",
+initialCode:'abstract class Parent {\n  Parent(){ System.out.println("Parent"); }\n}\nclass Child extends Parent {\n  Child(){\n    Parent();\n  }\n}',
+solution:'super();',
+solutionFull:'abstract class Parent {\n  Parent(){ System.out.println("Parent"); }\n}\nclass Child extends Parent {\n  Child(){\n    super();\n  }\n}',
+hint:"Use super() to call parent constructor."
+}
+];
+
+let currentLevel = 0;
+let attempts = 0;
+let totalScore = 0;
+let totalAttempts = 0;
+let isInGameSession = false;
+
+// Warning for leaving during gameplay
+window.addEventListener('beforeunload', function(e) {
+  if (isInGameSession) {
+    e.preventDefault();
+    e.returnValue = 'Are you sure you want to leave? Your current progress will be lost!';
+    return e.returnValue;
+  }
+});
+
+// Editor helper functions
+function setEditorCode(code){
+  const editor=document.getElementById('code-editor');
+  editor.innerHTML='';
+  code.split('\n').forEach(line=>{
+    const div=document.createElement('div');
+    div.textContent=line;
+    editor.appendChild(div);
+  });
+}
+function getEditorCode(){
+  const editor=document.getElementById('code-editor');
+  return Array.from(editor.children).map(div=>div.textContent).join('\n');
+}
+
+// Load level
+function loadLevel(){
+  isInGameSession = true; // Start game session
+  const level=levels[currentLevel];
+  document.getElementById('level-title').innerText=level.title;
+  document.getElementById('level-desc').innerText=level.desc;
+  setEditorCode(level.initialCode);
+  document.getElementById('message').style.display='none';
+  document.getElementById('solution-box').style.display='none';
+  attempts=0;
+  document.getElementById('code-editor').style.color="#e06c75";
+  
+  // Update progress bar
+  const progressPercent = ((currentLevel + 1) / levels.length) * 100;
+  document.getElementById("progress-fill").style.width = progressPercent + "%";
+}
+
+// Show full solution with missing part highlighted
+function showFullSolution(){
+  const level=levels[currentLevel];
+  const solutionBox=document.getElementById('solution-box');
+  solutionBox.innerHTML='';
+  level.solutionFull.split('\n').forEach(line=>{
+    const lineDiv=document.createElement('div');
+    if(line.includes(level.solution.trim())){
+      lineDiv.innerHTML=line.replace(level.solution.trim(),`<span class="solution-highlight">${level.solution.trim()}</span>`);
+    }else{
+      lineDiv.textContent=line;
+    }
+    solutionBox.appendChild(lineDiv);
+  });
+  solutionBox.style.display='block';
+}
+
+// Check code
+function checkCode(){
+  const playerCode=getEditorCode();
+  const msgDiv=document.getElementById('message');
+  if(playerCode.includes(levels[currentLevel].solution)){
+    msgDiv.className='success';
+    msgDiv.innerText='✓ Compilation Successful!';
+    msgDiv.style.display='block';
+    document.getElementById('code-editor').style.color='#98c379';
+    totalScore += (10 - attempts * 2); // More points for fewer attempts
+    totalAttempts += attempts;
+    playSuccessSound();
+    isInGameSession = false; // Level completed successfully
+    setTimeout(nextLevel,1500);
+  }else{
+    attempts++;
+    if(attempts>=3){
+      msgDiv.className='error';
+      msgDiv.innerText='✗ Too many failed attempts! See full solution below.';
+      msgDiv.style.display='block';
+      showFullSolution();
+      totalAttempts += attempts;
+      playFailureSound();
+      isInGameSession = false; // Level completed (failed)
+      setTimeout(nextLevel,4000);
+    }else{
+      msgDiv.className='error';
+      msgDiv.innerText=`✗ Syntax Error: ${levels[currentLevel].hint} (Attempt ${attempts}/3)`;
+      msgDiv.style.display='block';
+      playFailureSound();
+    }
+  }
+}
+
+// Skip level
+function skipLevel(){
+  const msgDiv=document.getElementById('message');
+  msgDiv.className='error';
+  msgDiv.innerText='Level Skipped! See full solution below.';
+  msgDiv.style.display='block';
+  showFullSolution();
+  playFailureSound();
+  setTimeout(nextLevel,4000);
+}
+
+function nextLevel(){
+  currentLevel++;
+  if(currentLevel<levels.length){
+    loadLevel();
+  }else{
+    // Save score
+    const user = localStorage.getItem("loggedInUser");
+    if(user){
+      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      if(users[user]){
+        const previousScore = users[user].scores.average || 0;
+        users[user].scores.average = Math.max(users[user].scores.average, totalScore);
+        users[user].challenges += 1;
+        // Update level based on score
+        if(totalScore > 50) users[user].level = 'Intermediate';
+        if(totalScore > 100) users[user].level = 'Advanced';
+
+        // Add activity
+        if(!users[user].activities) users[user].activities = [];
+        users[user].activities.unshift({
+          type: 'average',
+          game: 'Syntax Savior - Abstract',
+          score: totalScore,
+          timestamp: new Date().toISOString(),
+          improved: totalScore > previousScore
+        });
+        // Keep only last 10 activities
+        users[user].activities = users[user].activities.slice(0, 10);
+
+        localStorage.setItem('users', JSON.stringify(users));
+      }
+    }
+    isInGameSession = false; // All levels completed
+    alert(`Congratulations! You've completed all levels!\nTotal Score: ${totalScore}\nTotal Attempts: ${totalAttempts}`);
+    resetGame();
+  }
+}
+
+function resetGame(){
+  currentLevel=0;
+  loadLevel();
+}
+
+window.onload=loadLevel;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pixiecode</title>
+<link rel="stylesheet" href="css/index.css">
+</head>
+</head>
+
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <img src="Assets/pixiecode-logo.svg" alt="Pixiecode Logo" class="logo-img">
+    <strong>Pixiecode</strong>
+  </div>
+
+  <div class="nav-right">
+    <a href="#home">Home</a>
+    <a href="#levels">Game Levels</a>
+    <a href="#about">About</a>
+    <a class="start-btn" href="#levels">Start Playing</a>
+
+    <!-- PROFILE -->
+    <div class="profile-container">
+      <div class="profile" onclick="toggleDashboard()">
+        <img src="Assets/Character Design.jpg" alt="profile">
+      </div>
+
+      <!-- DASHBOARD -->
+      <div class="dashboard" id="dashboard">
+        <h3>Player Dashboard</h3>
+        <p id="username">Username: Player1</p>
+        <p id="level">Level: Beginner</p>
+        <p id="challenges">Challenges Completed: 3</p>
+        <p id="easyScore">Easy Score: 0</p>
+        <p id="averageScore">Average Score: 0</p>
+        <p id="difficultScore">Difficult Score: 0</p>
+
+        <button onclick="location.href='profile.html'">View Profile</button>
+        <button onclick="logout()">Logout</button>
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+<section id="home" class="hero">
+  <div>
+    <h1>Master Debugging<br><span>One Challenge at a Time</span></h1>
+    <p>
+      Test your coding skills with interactive debugging challenges across multiple difficulty levels.
+    </p>
+    <button class="primary" onclick="scrollToLevels()">Start Challenge</button>
+    <button class="secondary" onclick="location.href='pages/info/Javainfo.html'" >Learn Java</button>
+  </div>
+</section>
+
+<div class="intro-loader">
+  <img src="Assets/pixiecode-logo.svg" class="logo">
+</div>
+
+
+
+<section id="levels" class="section">
+  <h2>Game Levels</h2>
+  <p>Select a challenge to begin debugging</p>
+
+  <div class="cards">
+    <div class="card">
+      <span class="badge">EASY</span>
+      <h3>Fix the Syntax Error</h3>
+      <p>Find and fix the Java syntax error</p>
+      <div class="custom-select" id="easySelect">
+  <div class="select-selected">Select Java Topic</div>
+  <div class="select-options">
+    <div data-value="pages/games/syntax-error/array.html">Arrays</div>
+    <div data-value="pages/games/syntax-error/abstract.html">Abstract</div>
+    <div data-value="pages/games/syntax-error/loops.html">Loops</div>
+    <div data-value="pages/games/syntax-error/GameLevel1.html">Syntax Level</div>
+  </div>
+</div>
+<a href="#" onclick="startEasy()">Start →</a>
+    </div>
+
+    <div class="card">
+      <span class="badge">AVERAGE</span>
+      <h3>Syntax Savior</h3>
+      <p>Fix the code</p>
+     <div class="custom-select" data-target="">
+  <div class="select-selected">Select Java Topic</div>
+  <div class="select-options">
+    <div data-value="pages/games/syntax-savior/array.html">Arrays</div>
+    <div data-value="pages/games/syntax-savior/abstract.html">Abstract</div>
+    <div data-value="pages/games/syntax-savior/loops.html">Loops</div>
+    <div data-value="pages/games/syntax-savior/GameLevel2.html">Syntax Levels</div>
+  </div>
+</div>
+<a href="#" onclick="startEasy()">Start →</a>
+    </div>
+
+    <div class="card">
+      <span class="badge" style="background:#ef4444">DIFFICULT</span>
+      <h3>Race Condition</h3>
+      <p>Drag and Drop Challenge</p>
+      <p>Different difficulty</p>
+
+      <p>Good Luck</p>
+      <a href="pages/games/drag-drop/easy.html">Start →</a>
+    </div>
+  </div>
+
+  
+</section>
+
+<section id="about" class="about">
+  <h2>About This Game</h2>
+  <p>
+    Welcome to an interactive game designed to enhance your coding and debugging skills in an engaging and effective way.
+  </p>
+</section>
+
+<footer>
+  © 2026 Pixiecode - Master Your Debugging Skills
+</footer>
+
+<script src="js/index.js"></script>
+</body>
+</html>
+
+</body>
+</html>

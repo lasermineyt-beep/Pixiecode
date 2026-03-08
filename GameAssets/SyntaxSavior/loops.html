@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JanellaCult | Array Debugging Game</title>
+<style>
+  
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0f172a;
+    color: white;
+    margin: 0;
+    padding-top: 80px;
+}
+
+/* Nav */
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 96%;
+    background: rgba(17, 41, 160, 0.9);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 40px;
+    z-index: 1000;
+}
+nav a { 
+  color: white; 
+  text-decoration: none;
+   margin: 0 12px; 
+   font-size: 14px; 
+
+ }
+
+.start-btn { 
+  background: #2ab1a1ff; 
+  padding: 8px 16px; 
+  border-radius: 6px; 
+  font-weight: bold; 
+
+}
+
+/* Game Layout */
+.game-container { 
+  max-width: 900px; 
+  margin: 0 auto; 
+  padding: 20px; 
+
+}
+
+.level-info { 
+  background: #1e293b; 
+  padding: 20px; border-radius: 8px; 
+  margin-bottom: 20px; 
+  border-left: 5px solid #2ab1a1ff; 
+
+}
+.editor-container { 
+  background: #282c34; 
+  border-radius: 8px; 
+  overflow: hidden; 
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+
+}
+
+.editor-header { 
+  background: #21252b; 
+  padding: 10px 20px; 
+  font-family: monospace; 
+  font-size: 13px; color: #abb2bf; 
+  display: flex; justify-content: space-between; 
+
+}
+
+#code-editor { 
+  counter-reset: line; 
+  padding: 20px; 
+  background:#282c34; color:#e06c75; 
+  font-family:'Courier New', monospace; 
+  font-size:16px; 
+  overflow:auto; 
+  border:none; 
+  border-radius:8px; 
+  white-space:pre;
+  line-height:1.5; 
+
+}
+
+#code-editor div { 
+  counter-increment: line; 
+  position: relative; 
+  padding-left:40px; 
+
+}
+
+#code-editor div::before { 
+  content: counter(line); 
+  position:absolute; 
+  left:10px; 
+  color:#565c64; 
+
+}
+
+.controls { 
+  display:flex; 
+  gap:15px; 
+  margin-top:20px; 
+
+}
+
+button { 
+  cursor:pointer; 
+  padding:12px 24px; 
+  border:none; 
+  border-radius:4px; 
+  font-weight:bold; 
+  transition:0.3s; 
+
+}
+
+.btn-run { 
+  background: #2ab1a1ff; 
+  color: white;
+
+} 
+
+.btn-run:hover { 
+  background:#239487; 
+
+}
+
+.btn-skip { 
+  background:#d97706; 
+  color:white; 
+
+} 
+.btn-skip:hover { 
+  background:#b45309; 
+
+}
+
+#message { 
+  margin-top:20px; 
+  padding:15px; 
+  border-radius:4px; 
+  display:none; 
+
+}
+.success { 
+  background:#065f46; 
+  color:#a7f3d0; 
+  border:1px solid #059669; 
+
+}
+
+.error { 
+  background:#7f1d1d; 
+  color:#fecaca; 
+  border:1px solid #dc2626; }
+
+/* Solution Box */
+#solution-box {
+    background:#1e293b;
+    border-left:5px solid #2ab1a1ff;
+    padding:15px;
+    border-radius:8px;
+    color:white;
+    font-family:'Courier New', monospace;
+    font-size:16px;
+    white-space:pre;
+    overflow-x:auto;
+    margin-top:15px;
+
+}
+
+.solution-highlight { 
+  color:#98c379; 
+  font-weight:bold; 
+  
+  }
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #0f172a;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 15px 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #22d3ee 0%, #2ab1a1 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+</style>
+</head>
+<body>
+
+<nav>
+    <strong>JanellaCult</strong>
+    <div>
+        <a href="/index.html">Home</a>
+    </div>
+</nav>
+
+<div class="game-container">
+    <div class="level-info">
+        <h2 id="level-title">Level 1: The Missing Piece</h2>
+        <p id="level-desc">Java lines must always end with a specific character. Fix the code to print "Hello World".</p>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+    </div>
+
+    <div class="editor-container">
+        <div class="editor-header">
+            <span>Main.java</span>
+            <span>Language: Java</span>
+        </div>
+        <pre id="code-editor" contenteditable="true" spellcheck="false"></pre>
+    </div>
+
+    <div class="controls">
+        <button class="btn-run" onclick="checkCode()">Run Code (Compile)</button>
+        <button class="btn-skip" onclick="skipLevel()">Skip Level</button>
+    </div>
+
+    <div id="message"></div>
+    <div id="solution-box" style="display:none;"></div>
+</div>
+
+<script>
+// Array Debugging Levels
+const levels = [
+
+// ====== Sound Effects ======
+function playSuccessSound() {
+  try {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
+    oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1); // E5
+    oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2); // G5
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+  } catch(e) {
+    // Fallback: no sound if Web Audio API not supported
+  }
+}
+
+function playFailureSound() {
+  try {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(392, audioContext.currentTime); // G4
+    oscillator.frequency.setValueAtTime(330, audioContext.currentTime + 0.1); // E4
+    oscillator.frequency.setValueAtTime(262, audioContext.currentTime + 0.2); // C4
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+  } catch(e) {
+    // Fallback: no sound if Web Audio API not supported
+  }
+}
+{
+title:"Loop 1: For Loop Print",
+desc:"Fix the for loop to print numbers 1 to 5.",
+initialCode:'public class Main {\n  public static void main(String[] args) {\n    for(int i=1;i<=5;i++)\n      System.out.println(i)\n  }\n}',
+solution:'System.out.println(i);',
+solutionFull:'public class Main {\n  public static void main(String[] args) {\n    for(int i=1;i<=5;i++)\n      System.out.println(i);\n  }\n}',
+hint:"Add a semicolon at the end of the print statement."
+},
+{
+title:"Loop 2: While Loop Countdown",
+desc:"Fix the while loop to count down from 5 to 1.",
+initialCode:'public class Main {\n  public static void main(String[] args) {\n    int n=5;\n    while(n>0)\n      System.out.println(n)\n      n--;\n  }\n}',
+solution:'System.out.println(n);',
+solutionFull:'public class Main {\n  public static void main(String[] args) {\n    int n=5;\n    while(n>0){\n      System.out.println(n);\n      n--;\n    }\n  }\n}',
+hint:"Wrap the statements in {} and fix missing semicolon."
+},
+{
+title:"Loop 3: Do-While Loop",
+desc:"Complete the do-while loop to print 1 to 3.",
+initialCode:'public class Main {\n  public static void main(String[] args) {\n    int i=1;\n    do {\n      System.out.println(i)\n      i++;\n    } while(i<=3);\n  }\n}',
+solution:'System.out.println(i);',
+solutionFull:'public class Main {\n  public static void main(String[] args) {\n    int i=1;\n    do {\n      System.out.println(i);\n      i++;\n    } while(i<=3);\n  }\n}',
+hint:"Add semicolon to print statement."
+},
+{
+title:"Loop 4: Nested For Loop",
+desc:"Fix inner loop to print 1-3 for each outer loop.",
+initialCode:'public class Main {\n  public static void main(String[] args) {\n    for(int i=1;i<=2;i++){\n      for(int j=1;j<=3;j++)\n        System.out.print(j)\n    }\n  }\n}',
+solution:'System.out.print(j);',
+solutionFull:'public class Main {\n  public static void main(String[] args) {\n    for(int i=1;i<=2;i++){\n      for(int j=1;j<=3;j++)\n        System.out.print(j);\n      System.out.println();\n    }\n  }\n}',
+hint:"Add semicolon to print and optional println for new line."
+},
+{
+title:"Loop 5: Enhanced For Loop",
+desc:"Fix enhanced for loop to print each element.",
+initialCode:'public class Main {\n  public static void main(String[] args) {\n    int[] arr={1,2,3};\n    for(int num : arr)\n      System.out.println(num)\n  }\n}',
+solution:'System.out.println(num);',
+solutionFull:'public class Main {\n  public static void main(String[] args) {\n    int[] arr={1,2,3};\n    for(int num : arr)\n      System.out.println(num);\n  }\n}',
+hint:"Add semicolon at end."
+},
+{
+title:"Loop 6: Infinite Loop Fix",
+desc:"Fix the for loop so it terminates at 10.",
+initialCode:'public class Main {\n  public static void main(String[] args) {\n    for(int i=1;i!=10;i--){\n      System.out.println(i);\n    }\n  }\n}',
+solution:'i<=10',
+solutionFull:'public class Main {\n  public static void main(String[] args) {\n    for(int i=1;i<=10;i++){\n      System.out.println(i);\n    }\n  }\n}',
+hint:"Change loop condition and increment to count 1-10."
+},
+{
+title:"Loop 7: Break Statement",
+desc:"Fix loop to break when i==3.",
+initialCode:'public class Main {\n  public static void main(String[] args) {\n    for(int i=1;i<=5;i++){\n      System.out.println(i);\n      if(i=3)\n        break;\n    }\n  }\n}',
+solution:'if(i==3)',
+solutionFull:'public class Main {\n  public static void main(String[] args) {\n    for(int i=1;i<=5;i++){\n      System.out.println(i);\n      if(i==3)\n        break;\n    }\n  }\n}',
+hint:"Use == for comparison instead of =."
+},
+{
+title:"Loop 8: Continue Statement",
+desc:"Skip printing 2 in the loop.",
+initialCode:'public class Main {\n  public static void main(String[] args) {\n    for(int i=1;i<=3;i++){\n      if(i=2)\n        continue;\n      System.out.println(i);\n    }\n  }\n}',
+solution:'if(i==2)',
+solutionFull:'public class Main {\n  public static void main(String[] args) {\n    for(int i=1;i<=3;i++){\n      if(i==2)\n        continue;\n      System.out.println(i);\n    }\n  }\n}',
+hint:"Use == in if condition."
+},
+{
+title:"Loop 9: Loop Sum",
+desc:"Calculate sum 1+2+3 using loop.",
+initialCode:'public class Main {\n  public static void main(String[] args) {\n    int sum=0;\n    for(int i=1;i<=3;i++){\n      sum+=i\n    }\n    System.out.println(sum);\n  }\n}',
+solution:'sum+=i;',
+solutionFull:'public class Main {\n  public static void main(String[] args) {\n    int sum=0;\n    for(int i=1;i<=3;i++){\n      sum+=i;\n    }\n    System.out.println(sum);\n  }\n}',
+hint:"Add semicolon."
+},
+{
+title:"Loop 10: Nested While",
+desc:"Fix nested while to print 1-2 outer and 1-3 inner.",
+initialCode:'public class Main {\n  public static void main(String[] args) {\n    int i=1;\n    while(i<=2){\n      int j=1;\n      while(j<=3)\n        System.out.println(j)\n        j++;\n      i++;\n    }\n  }\n}',
+solution:'System.out.println(j);',
+solutionFull:'public class Main {\n  public static void main(String[] args) {\n    int i=1;\n    while(i<=2){\n      int j=1;\n      while(j<=3){\n        System.out.println(j);\n        j++;\n      }\n      i++;\n    }\n  }\n}',
+hint:"Add semicolon and wrap inner while in {}"
+}
+];
+
+let currentLevel = 0;
+let attempts = 0;
+let totalScore = 0;
+let totalAttempts = 0;
+let isInGameSession = false;
+
+// Warning for leaving during gameplay
+window.addEventListener('beforeunload', function(e) {
+  if (isInGameSession) {
+    e.preventDefault();
+    e.returnValue = 'Are you sure you want to leave? Your current progress will be lost!';
+    return e.returnValue;
+  }
+});
+
+// Editor helper functions
+function setEditorCode(code){
+  const editor=document.getElementById('code-editor');
+  editor.innerHTML='';
+  code.split('\n').forEach(line=>{
+    const div=document.createElement('div');
+    div.textContent=line;
+    editor.appendChild(div);
+  });
+}
+function getEditorCode(){
+  const editor=document.getElementById('code-editor');
+  return Array.from(editor.children).map(div=>div.textContent).join('\n');
+}
+
+// Load level
+function loadLevel(){
+  isInGameSession = true; // Start game session
+  const level=levels[currentLevel];
+  document.getElementById('level-title').innerText=level.title;
+  document.getElementById('level-desc').innerText=level.desc;
+  setEditorCode(level.initialCode);
+  document.getElementById('message').style.display='none';
+  document.getElementById('solution-box').style.display='none';
+  attempts=0;
+  document.getElementById('code-editor').style.color="#e06c75";
+  
+  // Update progress bar
+  const progressPercent = ((currentLevel + 1) / levels.length) * 100;
+  document.getElementById("progress-fill").style.width = progressPercent + "%";
+}
+
+// Show full solution with missing part highlighted
+function showFullSolution(){
+  const level=levels[currentLevel];
+  const solutionBox=document.getElementById('solution-box');
+  solutionBox.innerHTML='';
+  level.solutionFull.split('\n').forEach(line=>{
+    const lineDiv=document.createElement('div');
+    if(line.includes(level.solution.trim())){
+      lineDiv.innerHTML=line.replace(level.solution.trim(),`<span class="solution-highlight">${level.solution.trim()}</span>`);
+    }else{
+      lineDiv.textContent=line;
+    }
+    solutionBox.appendChild(lineDiv);
+  });
+  solutionBox.style.display='block';
+}
+
+// Check code
+function checkCode(){
+  const playerCode=getEditorCode();
+  const msgDiv=document.getElementById('message');
+  if(playerCode.includes(levels[currentLevel].solution)){
+    msgDiv.className='success';
+    msgDiv.innerText='✓ Compilation Successful!';
+    msgDiv.style.display='block';
+    document.getElementById('code-editor').style.color='#98c379';
+    totalScore += (10 - attempts * 2); // More points for fewer attempts
+    totalAttempts += attempts;
+    playSuccessSound();
+    isInGameSession = false; // Level completed successfully
+    setTimeout(nextLevel,1500);
+  }else{
+    attempts++;
+    if(attempts>=3){
+      msgDiv.className='error';
+      msgDiv.innerText='✗ Too many failed attempts! See full solution below.';
+      msgDiv.style.display='block';
+      showFullSolution();
+      totalAttempts += attempts;
+      playFailureSound();
+      isInGameSession = false; // Level completed (failed)
+      setTimeout(nextLevel,4000);
+    }else{
+      msgDiv.className='error';
+      msgDiv.innerText=`✗ Syntax Error: ${levels[currentLevel].hint} (Attempt ${attempts}/3)`;
+      msgDiv.style.display='block';
+      playFailureSound();
+    }
+  }
+}
+
+// Skip level
+function skipLevel(){
+  const msgDiv=document.getElementById('message');
+  msgDiv.className='error';
+  msgDiv.innerText='Level Skipped! See full solution below.';
+  msgDiv.style.display='block';
+  showFullSolution();
+  playFailureSound();
+  setTimeout(nextLevel,4000);
+}
+
+function nextLevel(){
+  currentLevel++;
+  if(currentLevel<levels.length){
+    loadLevel();
+  }else{
+    // Save score
+    const user = localStorage.getItem("loggedInUser");
+    if(user){
+      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      if(users[user]){
+        const previousScore = users[user].scores.average || 0;
+        users[user].scores.average = Math.max(users[user].scores.average, totalScore);
+        users[user].challenges += 1;
+        // Update level based on score
+        if(totalScore > 50) users[user].level = 'Intermediate';
+        if(totalScore > 100) users[user].level = 'Advanced';
+
+        // Add activity
+        if(!users[user].activities) users[user].activities = [];
+        users[user].activities.unshift({
+          type: 'average',
+          game: 'Syntax Savior - Loops',
+          score: totalScore,
+          timestamp: new Date().toISOString(),
+          improved: totalScore > previousScore
+        });
+        // Keep only last 10 activities
+        users[user].activities = users[user].activities.slice(0, 10);
+
+        localStorage.setItem('users', JSON.stringify(users));
+      }
+    }
+    isInGameSession = false; // All levels completed
+    alert(`Congratulations! You've completed all levels!\nTotal Score: ${totalScore}\nTotal Attempts: ${totalAttempts}`);
+    resetGame();
+  }
+}
+
+function resetGame(){
+  currentLevel=0;
+  loadLevel();
+}
+
+window.onload=loadLevel;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,110 @@
+Array
+int[] nums = _____ int[10];	new	Array
+2	for(int i = 0; i _____ arr.length; i++)	<	Loop
+3	public _____ class Vehicle { }	abstract	Abstraction
+4	while(_____)	true	Loop
+5	interface Playable { _____ play(); }	void	Interface
+6	int x = arr[_____];	0	Array
+7	for(String s _____ names)	:	Loop
+8	public abstract _____ calculate();	void	Abstraction
+9	if(i == 5) _____ ;	continue	Loop
+10	class Car _____ Vehicle { }	extends	Abstraction
+11	int len = matrix._____;	length	Array
+12	do { ... } _____ (x < 10);	while	Loop
+13	class Robot _____ Actionable { }	implements	Interface
+14	int last = arr[arr.length _____ 1];	-	Array
+15	for(int i=10; i > 0; i_____)	--	Loop
+16	public _____ void msg() { }	default	Interface
+17	arr[2] = _____;	50	Array
+18	if(found) _____;	break	Loop
+19	@_____	Override	Abstraction
+20	int[][] grid = _____ int[3][3];	new	Array
+21	while(sc._____())	hasNext	Loop
+22	Shape s = _____ Circle();	new	Abstraction
+23	for(_____; ; )	;	Loop
+24	interface methods are _____ by default.	public	Interface
+25	int val = matrix[0][_____];	0	Array
+
+Loop
+#	Question	Answer
+1	for(int i = 0; i _____ 10; i++)	<
+2	while(_____)	true
+3	for(int i = 0; _____ < 5; i++)	i
+4	do { ... } _____ (x < 5);	while
+5	for(int i = 0; i < 10; i_____)	++
+6	_____ (int x : nums)	for
+7	if(i == 5) _____; // Exit	break
+8	if(i == 2) _____; // Skip	continue
+9	for(int i = 10; i > 0; i_____)	--
+10	while(sc._____())	hasNext
+11	int i = _____; while(i < 5)	0
+12	for(_____; ; )	;
+13	count _____ 1; // Increment	+=
+14	for(int i=0; i<arr._____; i++)	length
+15	do { x++; } while(x _____ 10);	<
+16	for(int i=0; i<5; _____) { i++; }	;
+17	while(line _____ null)	!=
+18	for(String s _____ list)	:
+19	int i=5; while(i _____ 0)	>
+20	for(int i=0, j=10; i < j; i++, j_____)	--
+21	if (x % 2 _____ 0) // even	==
+22	while(_____flag)	!
+23	for(_____; i < 5; i++)	** ** (blank)
+24	outer: for(...) { _____ outer; }	break
+25	for(int i=0; i<=10; i _____ 2)	+=
+
+abstract
+1	public _____ class Animal	abstract
+2	public _____ void eat();	abstract
+3	class Dog _____ Animal	extends
+4	public _____ interface Drawable	interface
+5	class Circle _____ Drawable	implements
+6	Animal a = _____ Dog();	new
+7	public _____ void run() { }	default
+8	_____ classes cannot be instantiated.	Abstract
+9	A class can implement _____ interfaces.	multiple
+10	@_____	Override
+11	public _____ final int X = 10;	static
+12	abstract methods have no _____;	body
+13	interface methods are _____ by default.	public
+14	An abstract class _____ have a constructor.	can
+15	_____ methods cannot be abstract.	private
+16	interface Shape { _____ draw(); }	void
+17	_____ classes must implement methods.	Concrete
+18	abstract class MyClass { _____ x; }	int
+19	class A implements B, _____;	C
+20	public _____ void log() { ... }	static
+21	interface A _____ OtherInterface	extends
+22	Abstract classes support _____.	constructors
+23	_____ methods are utility in interfaces.	Static
+24	Animal a = new _____( ); // Error	Animal
+25	_____ methods provide compatibility.	Default
+
+
+int[] nums = _____ int[10];	new	Array
+2	for(int i = 0; i _____ arr.length; i++)	<	Loop
+3	public _____ class Vehicle { }	abstract	Abstraction
+4	while(_____)	true	Loop
+5	interface Playable { _____ play(); }	void	Interface
+6	int x = arr[_____];	0	Array
+7	for(String s _____ names)	:	Loop
+8	public abstract _____ calculate();	void	Abstraction
+9	if(i == 5) _____ ;	continue	Loop
+10	class Car _____ Vehicle { }	extends	Abstraction
+11	int len = matrix._____;	length	Array
+12	do { ... } _____ (x < 10);	while	Loop
+13	class Robot _____ Actionable { }	implements	Interface
+14	int last = arr[arr.length _____ 1];	-	Array
+15	for(int i=10; i > 0; i_____)	--	Loop
+16	public _____ void msg() { }	default	Interface
+17	arr[2] = _____;	50	Array
+18	if(found) _____;	break	Loop
+19	@_____	Override	Abstraction
+20	int[][] grid = _____ int[3][3];	new	Array
+21	while(sc._____())	hasNext	Loop
+22	Shape s = _____ Circle();	new	Abstraction
+23	for(_____; ; )	;	Loop
+24	interface methods are _____ by default.	public	Interface
+25	int val = matrix[0][_____];	0	Array
+
+

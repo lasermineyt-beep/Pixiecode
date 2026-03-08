@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JanellaCult - Java Game</title>
+    <style>
+        
+        * { box-sizing: border-box; font-family: "Segoe UI", sans-serif; }
+        
+        body { 
+            margin: 0; 
+            background: #0b1020; 
+            color: white; 
+            padding-top: 100px; 
+            line-height: 1.6;
+        }
+
+        
+        nav { 
+            position: fixed; 
+            top: 0; 
+            width: 100%; 
+            background: rgba(17, 41, 160, 0.85); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            padding: 14px 40px; 
+            z-index: 1000; 
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        nav a { 
+            color: white; 
+            text-decoration: none; 
+            margin: 0 12px; 
+            font-size: 14px; 
+            transition: 0.3s;
+        }
+        
+        nav a:hover { color: #22d3ee; }
+
+        .start-btn { 
+            background: #2ab1a1; 
+            padding: 8px 18px; 
+            border-radius: 6px; 
+            font-weight: bold; 
+        }
+
+        
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            text-align: center; 
+            padding: 0 20px;
+        }
+
+        h1 span { color: #22d3ee; text-shadow: 0 0 15px rgba(34, 211, 238, 0.3); }
+        
+        .level-info {
+            background: #020617;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 600px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .level-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #22d3ee;
+        }
+
+        .progress-bar {
+            flex: 1;
+            margin: 0 20px;
+            height: 8px;
+            background: #0f172a;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #22d3ee 0%, #2ab1a1 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .score-display {
+            font-size: 18px;
+            color: #fbbf24;
+            font-weight: bold;
+        }
+        
+        .game-wrapper { 
+            display: flex; 
+            gap: 30px; 
+            justify-content: center; 
+            margin-top: 30px; 
+            flex-wrap: wrap;
+        }
+
+        .section-box { 
+            background: #020617; 
+            border: 1px solid #1e293b; 
+            border-radius: 16px; 
+            padding: 25px; 
+            width: 450px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        h3 { 
+            font-size: 14px; 
+            color: #22d3ee; 
+            text-transform: uppercase; 
+            margin-bottom: 20px; 
+            text-align: center; 
+            letter-spacing: 1.5px;
+            opacity: 0.9;
+        }
+
+        .code-bank { 
+            min-height: 250px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
+            margin-bottom: 20px;
+        }
+
+        .code-line { 
+            background: #0f172a; 
+            border: 1px solid #334155; 
+            padding: 12px 14px; 
+            border-radius: 6px; 
+            cursor: grab; 
+            font-family: "Consolas", "Courier New", monospace; 
+            font-size: 13px; 
+            text-align: left; 
+            transition: all 0.2s ease;
+            white-space: pre; 
+            user-select: none;
+        }
+
+        .code-line:hover { 
+            border-color: #22d3ee; 
+            background: #1e293b;
+            transform: translateY(-1px);
+        }
+
+        .slot { 
+            height: 45px; 
+            background: rgba(15, 23, 42, 0.4); 
+            border: 2px dashed #1e293b; 
+            margin-bottom: 8px; 
+            border-radius: 6px; 
+            display: flex; 
+            align-items: center; 
+            padding: 0 8px; 
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .slot::before {
+            content: attr(data-order);
+            position: absolute;
+            left: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #22d3ee;
+            color: #020617;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .slot.drag-over { 
+            border-color: #22d3ee; 
+            background: rgba(34, 211, 238, 0.08); 
+        }
+
+        .correct-slot { border: 2px solid #22c55e !important; background: rgba(34, 197, 94, 0.1) !important; }
+        .wrong-slot { border: 2px solid #ef4444 !important; background: rgba(239, 68, 68, 0.1) !important; }
+
+        
+        button { 
+            padding: 12px 24px; 
+            border-radius: 8px; 
+            border: none; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            font-size: 14px;
+        }
+
+        .level-btn { 
+            background: transparent; 
+            color: #94a3b8; 
+            padding: 8px 16px; 
+            margin: 0 5px; 
+            border-radius: 30px;
+        }
+
+        .level-btn.active { background: #facc15; color: #020617; }
+
+        .primary-btn { 
+            background: linear-gradient(135deg, #2ab1a1 0%, #22d3ee 100%); 
+            color: white; 
+            margin-top: 15px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .primary-btn:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(42, 177, 161, 0.4);
+        }
+        
+        .reset-btn { 
+            background: #475569; 
+            color: white; 
+            margin-left: 10px; 
+            margin-top: 15px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+        .reset-btn:hover {
+            background: #334155;
+        }
+        
+        #feedback { 
+            font-weight: bold; 
+            margin-top: 15px; 
+            min-height: 24px; 
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <strong>JanellaCult</strong>
+    <div>
+        <a href="/index.html">Home</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>Java <span>Logic Builder</span></h1>
+    <p>Drag the snippets from the bank to the correct structure slot.</p>
+
+    <div class="level-info">
+        <div class="level-number">Level <span id="current-level">1</span></div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill" style="width: 20%;"></div>
+        </div>
+        <div class="score-display">Score: <span id="current-score">0</span></div>
+    </div>
+
+    <div class="game-wrapper">
+        <div class="section-box">
+            <h3>Code Bank</h3>
+            <div id="bank" class="code-bank" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+        </div>
+
+        <div class="section-box">
+            <h3>Program Structure</h3>
+            <div id="target-area"></div>
+            
+            <div style="display: flex; justify-content: center; align-items: center;">
+                <button class="primary-btn" onclick="checkCode()">Verify Compilation</button>
+                <button class="reset-btn" onclick="resetLevel()">Reset</button>
+            </div>
+            <div id="feedback"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+const levels = {
+    1: [
+        { id: "l1-1", text: "public class HelloWorld {", order: 1 },
+        { id: "l1-2", text: "  public static void main(String[] args) {", order: 2 },
+        { id: "l1-3", text: "    System.out.println(\"Hello World\");", order: 3 },
+        { id: "l1-4", text: "  }", order: 4 },
+        { id: "l1-5", text: "}", order: 5 }
+    ],
+    2: [
+        { id: "l2-1", text: "public class AddNumbers {", order: 1 },
+        { id: "l2-2", text: "  public static void main(String[] args) {", order: 2 },
+        { id: "l2-3", text: "    int a = 5;", order: 3 },
+        { id: "l2-4", text: "    int b = 10;", order: 4 },
+        { id: "l2-5", text: "    System.out.println(a + b);", order: 5 },
+        { id: "l2-6", text: "  }", order: 6 },
+        { id: "l2-7", text: "}", order: 7 }
+    ],
+    3: [
+        { id: "l3-1", text: "public class Loop {", order: 1 },
+        { id: "l3-2", text: "  public static void main(String[] args) {", order: 2 },
+        { id: "l3-3", text: "    for(int i=1; i<=5; i++) {", order: 3 },
+        { id: "l3-4", text: "      System.out.println(i);", order: 4 },
+        { id: "l3-5", text: "    }", order: 5 },
+        { id: "l3-6", text: "  }", order: 6 },
+        { id: "l3-7", text: "}", order: 7 }
+    ],
+    4: [
+        { id: "l4-1", text: "public class SimpleLoop {", order: 1 },
+        { id: "l4-2", text: "  public static void main(String[] args) {", order: 2 },
+        { id: "l4-3", text: "    int count = 1;", order: 3 },
+        { id: "l4-4", text: "    while(count <= 3) {", order: 4 },
+        { id: "l4-5", text: "      System.out.println(count);", order: 5 },
+        { id: "l4-6", text: "      count++;", order: 6 },
+        { id: "l4-7", text: "    }", order: 7 },
+        { id: "l4-8", text: "  }", order: 8 },
+        { id: "l4-9", text: "}", order: 9 }
+    ],
+    5: [
+        { id: "l5-1", text: "public class ArrayDemo {", order: 1 },
+        { id: "l5-2", text: "  public static void main(String[] args) {", order: 2 },
+        { id: "l5-3", text: "    int[] numbers = {1, 2, 3};", order: 3 },
+        { id: "l5-4", text: "    for(int i = 0; i < numbers.length; i++) {", order: 4 },
+        { id: "l5-5", text: "      System.out.println(numbers[i]);", order: 5 },
+        { id: "l5-6", text: "    }", order: 6 },
+        { id: "l5-7", text: "  }", order: 7 },
+        { id: "l5-8", text: "}", order: 8 }
+    ]
+};
+
+let currentLevel = 1;
+let totalScore = 0;
+let isInGameSession = false;
+
+// Warning for leaving during gameplay
+window.addEventListener('beforeunload', function(e) {
+  if (isInGameSession) {
+    e.preventDefault();
+    e.returnValue = 'Are you sure you want to leave? Your current progress will be lost!';
+    return e.returnValue;
+  }
+});
+
+// ====== Sound Effects ======
+function playSuccessSound() {
+  try {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
+    oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1); // E5
+    oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2); // G5
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+  } catch(e) {
+    // Fallback: no sound if Web Audio API not supported
+  }
+}
+
+function playFailureSound() {
+  try {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(392, audioContext.currentTime); // G4
+    oscillator.frequency.setValueAtTime(330, audioContext.currentTime + 0.1); // E4
+    oscillator.frequency.setValueAtTime(262, audioContext.currentTime + 0.2); // C4
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+  } catch(e) {
+    // Fallback: no sound if Web Audio API not supported
+  }
+}
+
+function startLevel(level) {
+    isInGameSession = true; // Start game session
+    currentLevel = level;
+    
+    // Update level display
+    document.getElementById('current-level').textContent = level;
+    document.getElementById('progress-fill').style.width = `${(level / 5) * 100}%`;
+    document.getElementById('current-score').textContent = totalScore;
+
+    const bank = document.getElementById('bank');
+    const targetArea = document.getElementById('target-area');
+    bank.innerHTML = "";
+    targetArea.innerHTML = "";
+    document.getElementById('feedback').innerHTML = "";
+
+    const levelData = [...levels[level]];
+    
+    // Create slots first (orderly)
+    levelData.forEach(line => {
+        const slot = document.createElement('div');
+        slot.className = "slot";
+        slot.setAttribute("data-expected", line.order);
+        slot.ondrop = drop;
+        slot.ondragover = allowDrop;
+        slot.ondragenter = dEnter;
+        slot.ondragleave = dLeave;
+        targetArea.appendChild(slot);
+    });
+
+    // Shuffle code lines for the bank
+    const shuffledData = levelData.sort(() => Math.random() - 0.5);
+    shuffledData.forEach(line => {
+        const div = document.createElement('div');
+        div.className = "code-line";
+        div.id = line.id;
+        div.setAttribute("draggable", "true");
+        div.setAttribute("data-order", line.order);
+        div.ondragstart = drag;
+        div.innerText = line.text;
+        bank.appendChild(div);
+    });
+}
+
+/* --- DRAG & DROP ENGINE --- */
+function allowDrop(ev) { ev.preventDefault(); }
+function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+function dEnter(ev) { if(ev.target.classList.contains('slot')) ev.target.classList.add('drag-over'); }
+function dLeave(ev) { if(ev.target.classList.contains('slot')) ev.target.classList.remove('drag-over'); }
+
+function drop(ev) {
+    ev.preventDefault();
+    let target = ev.target;
+    if(target.classList.contains('code-line')) target = target.parentNode;
+    if(target.classList.contains('slot')) target.classList.remove('drag-over');
+
+    const data = ev.dataTransfer.getData("text");
+    const draggedElement = document.getElementById(data);
+
+    if(target.id === "bank" || (target.classList.contains('slot') && target.children.length === 0)) {
+        target.appendChild(draggedElement);
+    }
+}
+
+function checkCode() {
+    const slots = document.querySelectorAll('.slot');
+    let correctCount = 0;
+    let filled = 0;
+
+    slots.forEach(slot => {
+        slot.classList.remove('correct-slot', 'wrong-slot');
+        const child = slot.firstElementChild;
+        if(child) {
+            filled++;
+            if(child.getAttribute('data-order') == slot.getAttribute('data-expected')) {
+                slot.classList.add('correct-slot');
+                correctCount++;
+            } else {
+                slot.classList.add('wrong-slot');
+            }
+        }
+    });
+
+    const fb = document.getElementById('feedback');
+    if(filled < slots.length) {
+        fb.innerHTML = "⚠️ Incomplete program structure!";
+        fb.style.color = "#22d3ee";
+    } else if(correctCount === slots.length) {
+        fb.innerHTML = `✅ Build Success! Level ${currentLevel} passed.`;
+        fb.style.color = "#22c55e";
+        totalScore += 20; // Points per level
+        document.getElementById('current-score').textContent = totalScore;
+        playSuccessSound();
+        setTimeout(() => {
+            if(currentLevel < 5){
+                currentLevel++;
+                startLevel(currentLevel);
+            } else {
+                // All levels completed
+                const user = localStorage.getItem("loggedInUser");
+                if(user){
+                    const users = JSON.parse(localStorage.getItem('users') || '{}');
+                    if(users[user]){
+                        const previousScore = users[user].scores.difficult || 0;
+                        users[user].scores.difficult = Math.max(users[user].scores.difficult, totalScore);
+                        users[user].challenges += 1;
+                        // Update level
+                        if(totalScore > 50) users[user].level = 'Intermediate';
+                        if(totalScore > 100) users[user].level = 'Advanced';
+
+                        // Add activity
+                        if(!users[user].activities) users[user].activities = [];
+                        users[user].activities.unshift({
+                          type: 'difficult',
+                          game: 'Drag & Drop Challenge',
+                          score: totalScore,
+                          timestamp: new Date().toISOString(),
+                          improved: totalScore > previousScore
+                        });
+                        // Keep only last 10 activities
+                        users[user].activities = users[user].activities.slice(0, 10);
+
+                        localStorage.setItem('users', JSON.stringify(users));
+                    }
+                }
+                alert(`Congratulations! All levels completed!\nTotal Score: ${totalScore}`);
+                currentLevel = 1;
+                totalScore = 0;
+                startLevel(1);
+            }
+        }, 2000);
+    } else {
+        fb.innerHTML = "❌ Compilation Error: Check your logic flow.";
+        fb.style.color = "#ef4444";
+        playFailureSound();
+    }
+}
+
+function resetLevel() {
+    startLevel(currentLevel);
+}
+
+// Initial Load
+window.onload = () => startLevel(1);
+
+// Fun Title Effect
+const originalTitle = document.title;
+document.addEventListener("visibilitychange", () => {
+    document.title = document.hidden ? "Wait, don't leave!" : originalTitle;
+});
+</script>
+
+</body>
+</html>

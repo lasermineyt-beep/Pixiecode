@@ -1,0 +1,229 @@
+body{
+  margin:0;
+  font-family:"Segoe UI",sans-serif;
+  background: linear-gradient(135deg, #0b1020 0%, #1e1b4b 100%);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  color:white;
+  overflow:hidden;
+}
+
+.login-box{
+  background:#020617;
+  padding:40px;
+  border-radius:16px;
+  width:360px;
+  text-align:center;
+  box-shadow:0 20px 40px rgba(0,0,0,0.6);
+  border:1px solid #1e293b;
+  position:relative;
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity:0; transform:translateY(-20px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+.login-box h2{
+  margin-bottom:30px;
+  color:#22d3ee;
+  font-size:24px;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  margin:8px 0;
+  border:none;
+  border-radius:8px;
+  background:#0f172a;
+  color:white;
+  font-size:16px;
+  transition:0.3s;
+  border:1px solid transparent;
+}
+
+input:focus{
+  outline:none;
+  border-color:#22d3ee;
+  box-shadow:0 0 10px rgba(34,211,238,0.3);
+}
+
+button{
+  width:100%;
+  padding:14px;
+  margin-top:20px;
+  border:none;
+  border-radius:8px;
+  background: linear-gradient(135deg, #2ab1a1 0%, #22d3ee 100%);
+  color:white;
+  font-weight:bold;
+  font-size:16px;
+  cursor:pointer;
+  transition:0.3s;
+  position:relative;
+  overflow:hidden;
+}
+
+button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 20px rgba(42,177,161,0.4);
+}
+
+button:active{
+  transform:translateY(0);
+}
+
+.error{
+  color:#ef4444;
+  font-size:14px;
+  margin-top:15px;
+  min-height:20px;
+}
+
+.toggle{
+  margin-top:25px;
+  cursor:pointer;
+  color:#94a3b8;
+  font-size:14px;
+  transition:0.3s;
+}
+
+.toggle:hover{
+  color:#22d3ee;
+}
+
+.hidden{
+  display:none;
+}
+
+.logo{
+  position:absolute;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:28px;
+  font-weight:bold;
+  color:#22d3ee;
+  text-shadow:0 0 20px rgba(34,211,238,0.5);
+}
+
+/* MOBILE RESPONSIVE STYLES */
+@media (max-width: 768px) {
+  body {
+    height: auto;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .login-box {
+    width: 100%;
+    max-width: 360px;
+    padding: 30px 20px;
+    margin: auto;
+  }
+
+  .login-box h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
+  input {
+    padding: 12px;
+    font-size: 14px;
+    margin: 6px 0;
+  }
+
+  button {
+    padding: 12px;
+    font-size: 14px;
+    margin-top: 15px;
+  }
+
+  .error {
+    font-size: 12px;
+    margin-top: 10px;
+  }
+
+  .toggle {
+    font-size: 12px;
+    margin-top: 15px;
+  }
+
+  .logo {
+    font-size: 24px;
+    top: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 15px;
+  }
+
+  .login-box {
+    padding: 25px 15px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .login-box h2 {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+
+  input {
+    padding: 10px;
+    font-size: 13px;
+    margin: 5px 0;
+  }
+
+  button {
+    padding: 10px;
+    font-size: 13px;
+    margin-top: 12px;
+  }
+
+  .error {
+    font-size: 11px;
+    margin-top: 8px;
+  }
+
+  .toggle {
+    font-size: 11px;
+    margin-top: 12px;
+  }
+
+  .logo {
+    font-size: 20px;
+    top: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  .login-box {
+    padding: 20px 12px;
+  }
+
+  .login-box h2 {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  input {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  button {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .logo {
+    font-size: 18px;
+  }
+}

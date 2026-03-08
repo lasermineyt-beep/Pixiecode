@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login | Pixiecode</title>
+<link rel="stylesheet" href="css/login.css">
+</head>
+</head>
+
+<body>
+
+<div class="login-box">
+<div class="logo">Pixiecode</div>
+
+<h2 id="formTitle">Welcome Back</h2>
+
+<div id="loginForm">
+<input type="text" id="username" placeholder="Username">
+<input type="password" id="password" placeholder="Password">
+<button onclick="login()">Login</button>
+</div>
+
+<div id="registerForm" class="hidden">
+<input type="text" id="regUsername" placeholder="Username">
+<input type="password" id="regPassword" placeholder="Password">
+<input type="password" id="regConfirm" placeholder="Confirm Password">
+<button onclick="register()">Create Account</button>
+</div>
+
+<p class="error" id="error"></p>
+
+<p class="toggle" onclick="toggleForm()">New here? Create an account</p>
+</div>
+
+<script src="js/login.js"></script>
+</body>
+</html>
+
+</body>
+</html>
