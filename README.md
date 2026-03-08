@@ -3,9 +3,15 @@ The game Pixiecode is an interactive learning game designed to help selected ICT
 Credits:
 Developed by:
 Kyle Nico Mendoza
+
 Janella Escamillas
 
+
 Assets provider:
+
 Lia Camry Boa
+
 Jenna Castillo
+
 Gabriel Bello
+
