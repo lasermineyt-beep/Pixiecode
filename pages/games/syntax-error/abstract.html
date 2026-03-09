@@ -22,8 +22,16 @@
   <div class="game" id="gameSection">
     <div class="timer">Time left: <span id="time">30</span>s</div>
     <p class="tries">Wrong attempts this question: <span id="tries">0</span>/3</p>
-    <p class="progress">Question: <span id="questionCount">1</span>/<span id="totalQuestions">60</span></p>    <div class="progress-bar">
-      <div class="progress-fill" id="progress-fill"></div>
+    <p class="progress">Question: <span id="questionCount">1</span>/<span id="totalQuestions">60</span></p>    <div class="timer-progress-section">
+      <div class="timer-progress-label">
+        <span>Time remaining:</span>
+        <span id="timerPercent">100%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill">
+          <span class="frog-icon" id="frogIcon">🐸</span>
+        </div>
+      </div>
     </div>    <h3 id="question"></h3>
     <pre id="code"></pre>
     <input id="answer" placeholder="Type answer here">
@@ -91,6 +99,29 @@ function playFailureSound() {
   }
 }
 
+function playRushSound() {
+  try {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+    oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.05);
+    oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 0.1);
+    
+    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.15);
+  } catch(e) {
+    // Fallback: no sound if Web Audio API not supported
+  }
+}
+
 // ====== Variables ======
 let timer;
 let timeLeft = 30;
@@ -101,6 +132,7 @@ let totalScore = 0;
 let totalAnswered = 0;
 let questionAnswered = false;
 let isInGameSession = false; // Track if user is actively playing
+let rushSoundPlayed = false; // Track if rush sound has played
 
 // ====== Warning for leaving during game ======
 window.addEventListener('beforeunload', function(e) {
@@ -166,6 +198,7 @@ function loadChallenge(){
   }
 
   questionAnswered = false; // reset
+  rushSoundPlayed = false; // reset rush sound flag
   isInGameSession = true; // User is now actively playing
   current = fullChallenges[0];
   tries = 0;
@@ -192,19 +225,53 @@ function startTimer(){
   clearInterval(timer);
   let t = timeLeft;
   document.getElementById("time").innerText = t;
+  updateTimerProgress(t);
 
   timer = setInterval(()=>{
     t--;
     document.getElementById("time").innerText = t;
+    updateTimerProgress(t);
+    
+    // Play rush sound when 5 seconds left
+    if(t === 5 && !rushSoundPlayed){
+      rushSoundPlayed = true;
+      playRushSound();
+    }
+    
+    // Play additional rush sounds at intervals
+    if(t > 0 && t <= 5 && t % 1 === 0){
+      playRushSound();
+    }
+    
     if(t <= 0){
       clearInterval(timer);
       if(!questionAnswered) totalWrong +=1;
       playFailureSound();
-      isInGameSession = false; // Question timed out
-      fullChallenges.shift();
-      loadChallenge();
+      isInGameSession = false;
+      questionAnswered = true;
+      document.getElementById("result").innerText = "⏰ Time's Up! Correct Answer: " + current.a;
+      
+      setTimeout(()=>{
+        fullChallenges.shift();
+        loadChallenge();
+      },2000);
     }
   },1000);
+}
+
+function updateTimerProgress(timeRemaining){
+  const progressPercent = (timeRemaining / timeLeft) * 100;
+  const progressFill = document.getElementById("progress-fill");
+  
+  progressFill.style.width = progressPercent + "%";
+  document.getElementById("timerPercent").innerText = Math.round(progressPercent) + "%";
+  
+  progressFill.classList.remove("warning", "danger");
+  if(progressPercent <= 33) {
+    progressFill.classList.add("danger");
+  } else if(progressPercent <= 66) {
+    progressFill.classList.add("warning");
+  }
 }
 
 // ====== Check Answer ======
