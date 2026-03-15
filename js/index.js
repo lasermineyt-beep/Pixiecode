@@ -107,7 +107,7 @@ const originalTitle = document.title;
 
 	document.addEventListener("visibilitychange", () => {
 		document.title = document.hidden ?
-		"Hoy Bumalik ka dito bading" :
+		"Come back Comrade" :
 		originalTitle;
 	});
 
