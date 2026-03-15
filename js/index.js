@@ -107,7 +107,7 @@ const originalTitle = document.title;
 
 	document.addEventListener("visibilitychange", () => {
 		document.title = document.hidden ?
-		"Hoy Bumalik ka dito bading" :
+		"Come back" :
 		originalTitle;
 	});
 
@@ -138,7 +138,6 @@ function scrollToLevels() {
   }
 }
 
-// Secret feature: click logo 5 times to play sound
 let clickCount = 0;
 const logo = document.querySelector('.logo-img');
 logo.addEventListener('click', () => {
