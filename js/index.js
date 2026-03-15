@@ -107,7 +107,7 @@ const originalTitle = document.title;
 
 	document.addEventListener("visibilitychange", () => {
 		document.title = document.hidden ?
-		"Come back Comrade" :
+		"Hoy Bumalik ka dito bading" :
 		originalTitle;
 	});
 
@@ -137,3 +137,15 @@ function scrollToLevels() {
     window.scrollTo({ top: offsetTop, behavior: "smooth" });
   }
 }
+
+// Secret feature: click logo 5 times to play sound
+let clickCount = 0;
+const logo = document.querySelector('.logo-img');
+logo.addEventListener('click', () => {
+  clickCount++;
+  if (clickCount === 5) {
+    const audio = new Audio('Assets/CCCP.mp3');
+    audio.play();
+    clickCount = 0; // reset counter
+  }
+});
