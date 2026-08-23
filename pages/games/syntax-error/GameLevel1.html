@@ -296,6 +296,38 @@ let totalAnswered = 0;
 let questionAnswered = false;
 let isInGameSession = false; // Track if user is actively playing
 let rushSoundPlayed = false; // Track if rush sound has played
+// ====== Anti-spam for Submit ======
+let spamClickTimes = [];
+let warnedForSpam = false;
+let terminatedForSpam = false;
+
+function registerSubmitAttempt(){
+  if(terminatedForSpam) return 'terminated';
+  const now = Date.now();
+  spamClickTimes.push(now);
+  spamClickTimes = spamClickTimes.filter(t=> now - t <= 3000); // 3s window
+  if(spamClickTimes.length >= 5){
+    if(!warnedForSpam){
+      warnedForSpam = true;
+      spamClickTimes = [];
+      document.getElementById('result').innerText = '⚠️ Do not spam Submit — one warning. Continued spamming will disqualify you.';
+      return 'warned';
+    } else {
+      terminatedForSpam = true;
+      // Show termination screen
+      clearInterval(timer);
+      isInGameSession = false;
+      document.getElementById('gameSection').style.display = 'none';
+      document.getElementById('finalResult').style.display = 'block';
+      document.getElementById('finalResult').querySelector('h2').innerText = '⛔ Disqualified for Spamming';
+      document.getElementById('totalAnswered').innerText = totalAnswered;
+      document.getElementById('totalWrong').innerText = totalWrong + 1;
+      document.getElementById('totalScore').innerText = totalScore;
+      return 'terminated';
+    }
+  }
+  return 'ok';
+}
 
 // ====== Warning for leaving during game ======
 window.addEventListener('beforeunload', function(e) {
@@ -338,21 +370,37 @@ const baseChallenges = [
 // Duplicate
 let fullChallenges = [];
 try{
-  const custom = localStorage.getItem('custom_launch');
-  if(custom){
-    const obj = JSON.parse(custom);
-    if(obj && obj.site==='pixiecode' && obj.game==='syntax-error' && obj.payload){
-      fullChallenges.push(obj.payload);
-      // consume once
-      localStorage.removeItem('custom_launch');
-    } else {
-      for(let i=0;i<1;i++) fullChallenges.push(...baseChallenges);
+  // first read queue of custom launches (supports multiple)
+  const queue = JSON.parse(localStorage.getItem('custom_launch_queue') || '[]');
+  if(Array.isArray(queue) && queue.length>0){
+    const remaining = [];
+    for(const item of queue){
+      if(item && item.site==='pixiecode' && item.game==='syntax-error' && item.payload){
+        fullChallenges.push(item.payload);
+      } else remaining.push(item);
     }
-  } else {
-    for(let i=0;i<1;i++) fullChallenges.push(...baseChallenges);
+    if(remaining.length) localStorage.setItem('custom_launch_queue', JSON.stringify(remaining));
+    else localStorage.removeItem('custom_launch_queue');
+  }
+
+  // fallback to single custom_launch for compatibility
+  if(fullChallenges.length===0){
+    const custom = localStorage.getItem('custom_launch');
+    if(custom){
+      const obj = JSON.parse(custom);
+      if(obj && obj.site==='pixiecode' && obj.game==='syntax-error' && obj.payload){
+        fullChallenges.push(obj.payload);
+        localStorage.removeItem('custom_launch');
+      }
+    }
+  }
+
+  // if still empty, use base challenges
+  if(fullChallenges.length===0){
+    fullChallenges.push(...baseChallenges);
   }
 }catch(e){
-  for(let i=0;i<1;i++) fullChallenges.push(...baseChallenges);
+  fullChallenges.push(...baseChallenges);
 }
 
 // Shuffle questions
@@ -455,6 +503,11 @@ function updateTimerProgress(timeRemaining){
 
 // ====== Check Answer ======
 function check(){
+  // anti-spam check
+  const spamState = registerSubmitAttempt();
+  if(spamState === 'warned') return; // stop processing, user warned
+  if(spamState === 'terminated') return; // stopped and disqualified
+
   let user = document.getElementById("answer").value.trim();
 
   if(user === current.a){

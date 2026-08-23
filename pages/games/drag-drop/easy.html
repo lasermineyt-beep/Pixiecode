@@ -61,6 +61,10 @@
         .level-info {
             background: #020617;
             border: 1px solid #1e293b;
+                // anti-spam check
+                const spam = registerSubmitAttemptDrag();
+                if(spam === 'warned') return;
+                if(spam === 'terminated') return;
             border-radius: 12px;
             padding: 20px;
             margin: 20px auto;
@@ -687,18 +691,62 @@ let currentLevel = 1;
 let totalScore = 0;
 let isInGameSession = false;
 
-// Allow loading a single custom drag-drop level via localStorage
-let customDrag = null;
+// Allow loading multiple custom drag-drop levels via localStorage queue
+let customDragQueue = null;
 try{
-    const custom = localStorage.getItem('custom_launch');
-    if(custom){
-        const obj = JSON.parse(custom);
-        if(obj && obj.site==='pixiecode' && obj.game==='drag-drop' && obj.payload){
-            customDrag = obj.payload; // { title, lines }
-            localStorage.removeItem('custom_launch');
+    const queue = JSON.parse(localStorage.getItem('custom_launch_queue') || '[]');
+    const arr = [];
+    const remaining = [];
+    if(Array.isArray(queue) && queue.length){
+        for(const item of queue){
+            if(item && item.site==='pixiecode' && item.game==='drag-drop' && item.payload){
+                arr.push(item.payload);
+            } else remaining.push(item);
+        }
+        if(arr.length){
+            customDragQueue = arr; // array of payloads {title, lines}
+            if(remaining.length) localStorage.setItem('custom_launch_queue', JSON.stringify(remaining));
+            else localStorage.removeItem('custom_launch_queue');
+        }
+    }
+
+    if(!customDragQueue){
+        const custom = localStorage.getItem('custom_launch');
+        if(custom){
+            const obj = JSON.parse(custom);
+            if(obj && obj.site==='pixiecode' && obj.game==='drag-drop' && obj.payload){
+                customDragQueue = [obj.payload];
+                localStorage.removeItem('custom_launch');
+            }
         }
     }
 }catch(e){/* ignore */}
+
+// Anti-spam for verify/submit
+let spamClickTimes_drag = [];
+let warnedForSpam_drag = false;
+let terminatedForSpam_drag = false;
+function registerSubmitAttemptDrag(){
+    if(terminatedForSpam_drag) return 'terminated';
+    const now = Date.now();
+    spamClickTimes_drag.push(now);
+    spamClickTimes_drag = spamClickTimes_drag.filter(t=> now - t <= 3000);
+    if(spamClickTimes_drag.length >= 5){
+        if(!warnedForSpam_drag){
+            warnedForSpam_drag = true;
+            spamClickTimes_drag = [];
+            document.getElementById('feedback').innerText = '⚠️ Do not spam Verify — one warning. Continued spamming will disqualify you.';
+            return 'warned';
+        } else {
+            terminatedForSpam_drag = true;
+            isInGameSession = false;
+            document.getElementById('feedback').innerText = '⛔ Disqualified for spamming.';
+            document.querySelectorAll('button').forEach(b=>b.disabled=true);
+            return 'terminated';
+        }
+    }
+    return 'ok';
+}
 
 // Warning for leaving during gameplay
 window.addEventListener('beforeunload', function(e) {
@@ -771,7 +819,8 @@ function startLevel(level) {
     targetArea.innerHTML = "";
     document.getElementById('feedback').innerHTML = "";
 
-    const levelData = [...levels[level]];
+    const totalLevels = customDragQueue ? customDragQueue.length : Object.keys(levels).length;
+    const levelData = customDragQueue && customDragQueue[currentLevel-1] ? customDragQueue[currentLevel-1].lines : [...levels[level]];
     
     // Create slots first (orderly)
     levelData.forEach(line => {

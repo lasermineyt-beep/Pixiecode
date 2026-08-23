@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Create Custom Question</title>
+  <title>Personalized Question</title>
   <style>
     body{font-family:Segoe UI,Arial;margin:24px;background:#0b1020;color:#fff}
     .card{background:#071028;padding:18px;border-radius:10px;max-width:820px;margin:auto;border:1px solid #123}
@@ -17,7 +17,7 @@
 </head>
 <body>
   <div class="card">
-    <h2>Create a Custom Question</h2>
+    <h2>Personalized Question</h2>
     <p>Choose a game type, fill the fields and generate a share code or open directly in the game.</p>
     
     <!-- Login gate -->
@@ -57,12 +57,17 @@
     <div class="row">
       <button id="generate">Generate Share Code</button>
       <button id="open">Open in Game</button>
+      <button id="addAnother" style="background:#f59e0b;color:#012">Add Another</button>
     </div>
 
     <label>Share Code</label>
     <div style="display:flex;gap:8px;align-items:center">
       <pre id="result" style="flex:1;margin:0;padding:10px;border-radius:6px;">-</pre>
       <button id="copyShare" style="padding:8px 12px;border-radius:8px;border:none;background:#22d3ee;color:#012">Copy</button>
+    </div>
+    <div style="margin-top:10px;display:flex;align-items:center;gap:12px">
+      <div style="color:#9bd">Queued Questions: <span id="queueCount">0</span></div>
+      <div id="addMsg" style="color:#aef;margin-left:8px"></div>
     </div>
     <p style="opacity:0.8">How it works: the generated code encodes the question. Use the 'Open in Game' button to store it locally and open the chosen game. The site only recognizes codes with the <strong>pixiecode</strong> prefix.</p>
     </div>
@@ -94,9 +99,15 @@
     document.getElementById('open').addEventListener('click', ()=>{
       const payload = buildPayload();
       const codeObj = {site:'pixiecode', game:gameType.value, payload};
-      // store to localStorage so games can read it
-      localStorage.setItem('custom_launch', JSON.stringify(codeObj));
-      // navigate to chosen game
+      // push into a queue so multiple custom questions can be scheduled
+      try{
+        const q = JSON.parse(localStorage.getItem('custom_launch_queue') || '[]');
+        q.push(codeObj);
+        localStorage.setItem('custom_launch_queue', JSON.stringify(q));
+      }catch(e){
+        localStorage.setItem('custom_launch_queue', JSON.stringify([codeObj]));
+      }
+      // navigate to chosen game (the game will consume the queue)
       if(gameType.value === 'syntax-error') window.location.href = 'pages/games/syntax-error/GameLevel1.html';
       else if(gameType.value === 'syntax-savior') window.location.href = 'pages/games/syntax-savior/GameLevel2.html';
       else window.location.href = 'pages/games/drag-drop/easy.html';
@@ -124,6 +135,38 @@
         const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); alert('Copied share code');
       }
     });
+
+    // Add Another: push to queue and clear form for next
+    function updateQueueCount(){
+      try{
+        const q = JSON.parse(localStorage.getItem('custom_launch_queue')||'[]');
+        document.getElementById('queueCount').innerText = Array.isArray(q)?q.length:0;
+      }catch(e){ document.getElementById('queueCount').innerText = 0; }
+    }
+
+    document.getElementById('addAnother').addEventListener('click', ()=>{
+      const payload = buildPayload();
+      const codeObj = {site:'pixiecode', game:gameType.value, payload};
+      try{
+        const q = JSON.parse(localStorage.getItem('custom_launch_queue') || '[]');
+        q.push(codeObj);
+        localStorage.setItem('custom_launch_queue', JSON.stringify(q));
+        document.getElementById('addMsg').innerText = 'Added — you can create another.';
+        // clear fields for new question
+        title.value=''; answer.value=''; hint.value=''; code.value=''; result.innerText='-';
+        updateQueueCount();
+        setTimeout(()=>document.getElementById('addMsg').innerText='',2000);
+      }catch(e){
+        localStorage.setItem('custom_launch_queue', JSON.stringify([codeObj]));
+        document.getElementById('addMsg').innerText = 'Added — you can create another.';
+        title.value=''; answer.value=''; hint.value=''; code.value=''; result.innerText='-';
+        updateQueueCount();
+        setTimeout(()=>document.getElementById('addMsg').innerText='',2000);
+      }
+    });
+
+    // initialize queue count on load
+    updateQueueCount();
 
     // Login gate logic (username: admin, password: admin123)
     const loginBtn = document.getElementById('loginBtn');

@@ -497,15 +497,64 @@ let totalScore = 0;
 let totalAttempts = 0;
 let isInGameSession = false;
 
+// Anti-spam for submit button
+let spamClickTimes_savior = [];
+let warnedForSpam_savior = false;
+let terminatedForSpam_savior = false;
+function registerSubmitAttemptSavior(){
+  if(terminatedForSpam_savior) return 'terminated';
+  const now = Date.now();
+  spamClickTimes_savior.push(now);
+  spamClickTimes_savior = spamClickTimes_savior.filter(t=> now - t <= 3000);
+  if(spamClickTimes_savior.length >= 5){
+    if(!warnedForSpam_savior){
+      warnedForSpam_savior = true;
+      spamClickTimes_savior = [];
+      const msgDiv = document.getElementById('message');
+      msgDiv.className='error';
+      msgDiv.innerText = '⚠️ Do not spam Run — one warning. Continued spamming will disqualify you.';
+      msgDiv.style.display='block';
+      return 'warned';
+    } else {
+      terminatedForSpam_savior = true;
+      clearInterval(timer);
+      isInGameSession = false;
+      alert('⛔ You have been disqualified for spamming the Run button.');
+      // disable controls
+      document.querySelectorAll('button').forEach(b=>b.disabled=true);
+      return 'terminated';
+    }
+  }
+  return 'ok';
+}
+
 // Allow a single custom level to be loaded via localStorage (created by create-question.html)
 let levelsToUse = levels;
 try{
-  const custom = localStorage.getItem('custom_launch');
-  if(custom){
-    const obj = JSON.parse(custom);
-    if(obj && obj.site==='pixiecode' && obj.game==='syntax-savior' && obj.payload){
-      levelsToUse = [obj.payload];
-      localStorage.removeItem('custom_launch');
+  // support multiple custom levels via queue
+  const queue = JSON.parse(localStorage.getItem('custom_launch_queue') || '[]');
+  const customLevels = [];
+  const remaining = [];
+  if(Array.isArray(queue) && queue.length){
+    for(const item of queue){
+      if(item && item.site==='pixiecode' && item.game==='syntax-savior' && item.payload){
+        customLevels.push(item.payload);
+      } else remaining.push(item);
+    }
+    if(remaining.length) localStorage.setItem('custom_launch_queue', JSON.stringify(remaining));
+    else localStorage.removeItem('custom_launch_queue');
+  }
+
+  if(customLevels.length>0){
+    levelsToUse = customLevels.concat(levels);
+  } else {
+    const custom = localStorage.getItem('custom_launch');
+    if(custom){
+      const obj = JSON.parse(custom);
+      if(obj && obj.site==='pixiecode' && obj.game==='syntax-savior' && obj.payload){
+        levelsToUse = [obj.payload];
+        localStorage.removeItem('custom_launch');
+      }
     }
   }
 }catch(e){/* ignore */}
@@ -571,6 +620,10 @@ function showFullSolution(){
 
 // Check code
 function checkCode(){
+  // anti-spam: prevent run button spamming
+  const spam = registerSubmitAttemptSavior();
+  if(spam === 'warned') return;
+  if(spam === 'terminated') return;
   const playerCode=getEditorCode();
   const msgDiv=document.getElementById('message');
   if(playerCode.includes(levelsToUse[currentLevel].solution)){
