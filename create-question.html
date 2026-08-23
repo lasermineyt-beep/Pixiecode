@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Create Custom Question</title>
+  <style>
+    body{font-family:Segoe UI,Arial;margin:24px;background:#0b1020;color:#fff}
+    .card{background:#071028;padding:18px;border-radius:10px;max-width:820px;margin:auto;border:1px solid #123}
+    label{display:block;margin-top:12px;font-weight:600}
+    input,textarea,select{width:100%;padding:8px;margin-top:6px;border-radius:6px;border:1px solid #234;background:#07182a;color:#fff}
+    .row{display:flex;gap:10px}
+    .row > *{flex:1}
+    button{margin-top:12px;padding:10px 14px;border-radius:8px;border:none;background:#2ab1a1;color:#012}
+    pre{background:#07182a;padding:10px;border-radius:6px;overflow:auto}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Create a Custom Question</h2>
+    <p>Choose a game type, fill the fields and generate a share code or open directly in the game.</p>
+    
+    <!-- Login gate -->
+    <div id="loginBox" style="background:#021427;padding:12px;border-radius:8px;margin-bottom:12px;">
+      <h3 style="margin:0 0 8px 0;color:#cfe">Administrator Login</h3>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <input id="loginUser" placeholder="username" style="flex:1;padding:8px;border-radius:6px;border:1px solid #234;background:#07182a;color:#fff" />
+        <input id="loginPass" type="password" placeholder="password" style="flex:1;padding:8px;border-radius:6px;border:1px solid #234;background:#07182a;color:#fff" />
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="loginBtn" style="padding:8px 12px;border-radius:8px;border:none;background:#2ab1a1;color:#012">Login</button>
+        <span id="loginMsg" style="color:#f88;margin-left:8px"></span>
+      </div>
+    </div>
+
+    <div id="mainCard" style="display:none">
+
+    <label>Game Type</label>
+    <select id="gameType">
+      <option value="syntax-error">Syntax Error (fill-blank)</option>
+      <option value="syntax-savior">Syntax Savior (editable code)</option>
+      <option value="drag-drop">Drag & Drop (code lines)</option>
+    </select>
+
+    <label>Title / Question</label>
+    <input id="title" placeholder="Short title or question" />
+
+    <label>Answer (for simple fill-in / solution token)</label>
+    <input id="answer" placeholder="Answer text (for syntax-error or solution token)" />
+
+    <label>Hint</label>
+    <input id="hint" placeholder="Hint text" />
+
+    <label id="codeLabel">Code / Initial Code / Lines</label>
+    <textarea id="code" rows="8" placeholder="Paste code or lines here. For drag-drop, put lines in correct order separated by newline."></textarea>
+
+    <div class="row">
+      <button id="generate">Generate Share Code</button>
+      <button id="open">Open in Game</button>
+    </div>
+
+    <label>Share Code</label>
+    <div style="display:flex;gap:8px;align-items:center">
+      <pre id="result" style="flex:1;margin:0;padding:10px;border-radius:6px;">-</pre>
+      <button id="copyShare" style="padding:8px 12px;border-radius:8px;border:none;background:#22d3ee;color:#012">Copy</button>
+    </div>
+    <p style="opacity:0.8">How it works: the generated code encodes the question. Use the 'Open in Game' button to store it locally and open the chosen game. The site only recognizes codes with the <strong>pixiecode</strong> prefix.</p>
+    </div>
+  </div>
+
+  <script src="js/custom-share.js"></script>
+  <script>
+    const gameType = document.getElementById('gameType');
+    const title = document.getElementById('title');
+    const answer = document.getElementById('answer');
+    const hint = document.getElementById('hint');
+    const code = document.getElementById('code');
+    const result = document.getElementById('result');
+    const codeLabel = document.getElementById('codeLabel');
+
+    gameType.addEventListener('change', () => {
+      const v = gameType.value;
+      if (v === 'drag-drop') codeLabel.innerText = 'Lines (one per line)';
+      else if (v === 'syntax-savior') codeLabel.innerText = 'Initial Code (editable)';
+      else codeLabel.innerText = 'Code (optional)';
+    });
+
+    document.getElementById('generate').addEventListener('click', ()=>{
+      const payload = buildPayload();
+      const codeStr = encodeShare({site:'pixiecode', game:gameType.value, payload});
+      result.innerText = codeStr;
+    });
+
+    document.getElementById('open').addEventListener('click', ()=>{
+      const payload = buildPayload();
+      const codeObj = {site:'pixiecode', game:gameType.value, payload};
+      // store to localStorage so games can read it
+      localStorage.setItem('custom_launch', JSON.stringify(codeObj));
+      // navigate to chosen game
+      if(gameType.value === 'syntax-error') window.location.href = 'pages/games/syntax-error/GameLevel1.html';
+      else if(gameType.value === 'syntax-savior') window.location.href = 'pages/games/syntax-savior/GameLevel2.html';
+      else window.location.href = 'pages/games/drag-drop/easy.html';
+    });
+
+    function buildPayload(){
+      const v = gameType.value;
+      if(v === 'syntax-error'){
+        return {q: title.value || 'Custom question', a: answer.value || '', h: hint.value || '', code: code.value || ''};
+      } else if(v === 'syntax-savior'){
+        return {title: title.value || 'Custom Level', desc: '', initialCode: code.value || '', solution: answer.value || '', solutionFull: code.value || '', hint: hint.value || ''};
+      } else {
+        // drag-drop: lines array
+        const lines = (code.value || '').split('\n').map((t,i)=>({id:'c'+i,text:t,order:i+1}));
+        return {title: title.value || 'Custom Drag', lines};
+      }
+    }
+    // copy share code
+    document.getElementById('copyShare').addEventListener('click', ()=>{
+      const txt = document.getElementById('result').innerText.trim();
+      if(!txt || txt === '-' ) { alert('No share code to copy'); return; }
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(()=>alert('Copied share code')); 
+      } else {
+        const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); alert('Copied share code');
+      }
+    });
+
+    // Login gate logic (username: admin, password: admin123)
+    const loginBtn = document.getElementById('loginBtn');
+    const loginUser = document.getElementById('loginUser');
+    const loginPass = document.getElementById('loginPass');
+    const loginMsg = document.getElementById('loginMsg');
+    const mainCard = document.getElementById('mainCard');
+    loginBtn.addEventListener('click', ()=>{
+      const u = (loginUser.value || '').trim();
+      const p = (loginPass.value || '').trim();
+      if(u === 'admin' && p === 'admin123'){
+        mainCard.style.display = 'block';
+        document.getElementById('loginBox').style.display = 'none';
+        loginMsg.innerText = '';
+      } else {
+        loginMsg.innerText = 'Invalid credentials';
+      }
+    });
+    // Allow Enter key to submit on password field
+    loginPass.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') loginBtn.click(); });
+  </script>
+</body>
+</html>

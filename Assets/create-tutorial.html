@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>How to Create Custom Questions — Pixiecode</title>
+  <style>
+    body{font-family:Segoe UI,Arial;background:#071028;color:#eef;margin:20px}
+    .card{max-width:900px;margin:auto;background:#07182a;border:1px solid #123;padding:20px;border-radius:10px}
+    h1{margin-top:0;color:#fff}
+    h2{color:#cfe}
+    ol{margin-left:18px}
+    pre{background:#021426;padding:10px;border-radius:6px;overflow:auto;color:#cff}
+    a.button{display:inline-block;margin-top:12px;padding:8px 12px;border-radius:8px;background:#2ab1a1;color:#012;text-decoration:none}
+    section{margin-bottom:18px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Create & Share Custom Questions</h1>
+    <p>This guide explains how to build custom questions for each game type and how to share/open them on Pixiecode.</p>
+
+    <section>
+      <h2>Before you start</h2>
+      <ol>
+        <li>Open the <strong>Create Question</strong> page: <a href="/create-question.html">create-question.html</a>.</li>
+        <li>Choose the <strong>Game Type</strong> at the top of the form.</li>
+        <li>Fill the fields shown for the chosen game (Title/Question, Answer, Hint, Code/Lines).</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>1) Syntax Error (fill-the-blank)</h2>
+      <ol>
+        <li>Select <em>Syntax Error</em> as Game Type.</li>
+        <li>Enter the question text in <strong>Title / Question</strong> (for example: "int[] nums = _____ int[10];").</li>
+        <li>Enter the correct token in <strong>Answer</strong> (e.g. <code>new</code>), and a short hint.</li>
+        <li>Optional: paste a longer code snippet in the Code box — it will show inside the game.</li>
+        <li>Click <strong>Generate Share Code</strong> to create a share string, or <strong>Open in Game</strong> to test now.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>2) Syntax Savior (editable code)</h2>
+      <ol>
+        <li>Select <em>Syntax Savior</em>.</li>
+        <li>Paste the full initial code into the <strong>Code</strong> box (this becomes the editable starting file).</li>
+        <li>Fill <strong>Answer</strong> with the expected solution token or snippet (used to validate success).</li>
+        <li>Click <strong>Generate Share Code</strong> or <strong>Open in Game</strong> to play it right away.</li>
+        <li>The game checks whether your edited code includes the provided solution string; include minimal expected text in <strong>Answer</strong>.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>3) Drag & Drop (code lines)</h2>
+      <ol>
+        <li>Select <em>Drag & Drop</em>.</li>
+        <li>Enter the program lines in the <strong>Code</strong> box — one line per row in the correct final order.</li>
+        <li>When players drag the lines into slots they are validated against those original positions.</li>
+        <li>Click <strong>Generate Share Code</strong> to create a shareable string or <strong>Open in Game</strong> to test it now.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>How sharing works</h2>
+      <ol>
+        <li>Click <strong>Generate Share Code</strong> to produce a short string beginning with <code>pixiecode:</code>.</li>
+        <li>Use the <strong>Copy</strong> button to copy that string to your clipboard.</li>
+        <li>Send the string to others (chat, email, etc.).</li>
+        <li>On the Pixiecode homepage, paste the string into the <strong>Open Shared Question</strong> input and click <strong>Open</strong>.</li>
+        <li>The website stores the question temporarily and opens the target game; the game will load the custom question once and then clear the temporary storage.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Troubleshooting</h2>
+      <ol>
+        <li>If the code says <em>Invalid code</em>, make sure you pasted the full generated string starting with <code>pixiecode:</code>.</li>
+        <li>If a custom level doesn't appear in the game, refresh and try using <strong>Open in Game</strong> instead of pasting on the index.</li>
+        <li>For large code blocks, ensure there are no stray control characters — paste as plain text.</li>
+      </ol>
+    </section>
+
+    <a class="button" href="/index.html">Back to Home</a>
+  </div>
+</body>
+</html>

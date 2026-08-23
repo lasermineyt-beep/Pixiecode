@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JanellaCult | Array Debugging Game</title>
+<title>Pixiecode | Array Debugging Game</title>
 <style>
   
 body {
@@ -235,10 +235,10 @@ button {
 <body>
 
 <nav>
-    <strong>JanellaCult</strong>
-    <div>
-        <a href="/index.html">Home</a>
-    </div>
+  <strong>Pixiecode</strong>
+  <div>
+    <a href="/index.html">Home</a>
+  </div>
 </nav>
 
 <div class="game-container">
@@ -497,6 +497,19 @@ let totalScore = 0;
 let totalAttempts = 0;
 let isInGameSession = false;
 
+// Allow a single custom level to be loaded via localStorage (created by create-question.html)
+let levelsToUse = levels;
+try{
+  const custom = localStorage.getItem('custom_launch');
+  if(custom){
+    const obj = JSON.parse(custom);
+    if(obj && obj.site==='pixiecode' && obj.game==='syntax-savior' && obj.payload){
+      levelsToUse = [obj.payload];
+      localStorage.removeItem('custom_launch');
+    }
+  }
+}catch(e){/* ignore */}
+
 // Warning for leaving during gameplay
 window.addEventListener('beforeunload', function(e) {
   if (isInGameSession) {
@@ -524,7 +537,7 @@ function getEditorCode(){
 // Load level
 function loadLevel(){
   isInGameSession = true; // Start game session
-  const level=levels[currentLevel];
+  const level=levelsToUse[currentLevel];
   document.getElementById('level-title').innerText=level.title;
   document.getElementById('level-desc').innerText=level.desc;
   setEditorCode(level.initialCode);
@@ -534,14 +547,14 @@ function loadLevel(){
   document.getElementById('code-editor').style.color="#e06c75";
   
   // Update progress bar
-  const progressPercent = ((currentLevel + 1) / levels.length) * 100;
+  const progressPercent = ((currentLevel + 1) / levelsToUse.length) * 100;
   document.getElementById("progress-fill").style.width = progressPercent + "%";
   document.getElementById("timerPercent").innerText = Math.round(progressPercent) + "%";
 }
 
 // Show full solution with missing part highlighted
 function showFullSolution(){
-  const level=levels[currentLevel];
+  const level=levelsToUse[currentLevel];
   const solutionBox=document.getElementById('solution-box');
   solutionBox.innerHTML='';
   level.solutionFull.split('\n').forEach(line=>{
@@ -560,7 +573,7 @@ function showFullSolution(){
 function checkCode(){
   const playerCode=getEditorCode();
   const msgDiv=document.getElementById('message');
-  if(playerCode.includes(levels[currentLevel].solution)){
+  if(playerCode.includes(levelsToUse[currentLevel].solution)){
     msgDiv.className='success';
     msgDiv.innerText='✓ Compilation Successful!';
     msgDiv.style.display='block';
@@ -583,7 +596,7 @@ function checkCode(){
       setTimeout(nextLevel,4000);
     }else{
       msgDiv.className='error';
-      msgDiv.innerText=`✗ Syntax Error: ${levels[currentLevel].hint} (Attempt ${attempts}/3)`;
+      msgDiv.innerText=`✗ Syntax Error: ${levelsToUse[currentLevel].hint} (Attempt ${attempts}/3)`;
       msgDiv.style.display='block';
       playFailureSound();
     }
@@ -603,7 +616,7 @@ function skipLevel(){
 
 function nextLevel(){
   currentLevel++;
-  if(currentLevel<levels.length){
+  if(currentLevel<levelsToUse.length){
     loadLevel();
   }else{
     // Save score

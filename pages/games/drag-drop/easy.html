@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JanellaCult - Java Game</title>
+    <title>Pixiecode - Java Game</title>
     <style>
         
         * { box-sizing: border-box; font-family: "Segoe UI", sans-serif; }
@@ -687,6 +687,19 @@ let currentLevel = 1;
 let totalScore = 0;
 let isInGameSession = false;
 
+// Allow loading a single custom drag-drop level via localStorage
+let customDrag = null;
+try{
+    const custom = localStorage.getItem('custom_launch');
+    if(custom){
+        const obj = JSON.parse(custom);
+        if(obj && obj.site==='pixiecode' && obj.game==='drag-drop' && obj.payload){
+            customDrag = obj.payload; // { title, lines }
+            localStorage.removeItem('custom_launch');
+        }
+    }
+}catch(e){/* ignore */}
+
 // Warning for leaving during gameplay
 window.addEventListener('beforeunload', function(e) {
   if (isInGameSession) {
@@ -787,6 +800,37 @@ function startLevel(level) {
         div.innerText = line.text;
         bank.appendChild(div);
     });
+}
+
+function startCustomDrag(payload){
+    isInGameSession = true;
+    const bank = document.getElementById('bank');
+    const targetArea = document.getElementById('target-area');
+    bank.innerHTML = '';
+    targetArea.innerHTML = '';
+    document.getElementById('feedback').innerHTML = '';
+
+    const lines = payload.lines || [];
+    lines.forEach((line, idx) =>{
+        const slot = document.createElement('div');
+        slot.className = 'slot';
+        slot.setAttribute('data-expected', idx+1);
+        slot.ondrop = drop; slot.ondragover = allowDrop; slot.ondragenter = dEnter; slot.ondragleave = dLeave;
+        targetArea.appendChild(slot);
+    });
+    const shuffled = [...lines].sort(()=>Math.random()-0.5);
+    shuffled.forEach((line, i) =>{
+        const div = document.createElement('div');
+        div.className = 'code-line';
+        div.id = 'custom-'+i;
+        div.setAttribute('draggable','true');
+        div.setAttribute('data-order', line.order || (i+1));
+        div.ondragstart = drag;
+        div.innerText = line.text || '';
+        bank.appendChild(div);
+    });
+    document.getElementById('current-level').textContent = payload.title || 'Custom';
+    document.getElementById('progress-fill').style.width = '100%';
 }
 
 /* --- DRAG & DROP ENGINE --- */
@@ -965,7 +1009,10 @@ function resetLevel() {
 }
 
 // Initial Load
-window.onload = () => startLevel(1);
+window.onload = () => {
+    if(customDrag) startCustomDrag(customDrag);
+    else startLevel(1);
+};
 
 // Fun Title Effect
 const originalTitle = document.title;

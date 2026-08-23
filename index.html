@@ -21,6 +21,7 @@
     <a href="#levels">Game Levels</a>
     <a href="#about">About</a>
     <a class="start-btn" href="#levels">Start Playing</a>
+    <a class="start-btn" href="create-question.html" style="margin-left:8px;">Create Question</a>
 
     <!-- PROFILE -->
     <div class="profile-container">
@@ -114,6 +115,17 @@
   
 </section>
 
+<section id="share" style="max-width:900px;margin:28px auto;padding:20px;background:#071028;border-radius:10px;border:1px solid #123;color:#fff">
+  <h3>Open Shared Question</h3>
+  <p>Paste a share code produced by the Create Question page (starts with <strong>pixiecode:</strong>), then click Open.</p>
+  <div style="display:flex;gap:8px">
+    <input id="shareInput" placeholder="pixiecode:..." style="flex:1;padding:10px;border-radius:8px;border:1px solid #234;background:#07182a;color:#fff" />
+    <button id="openShare" style="padding:10px 14px;border-radius:8px;border:none;background:#2ab1a1;color:#012">Open</button>
+    <button id="copyShareIndex" style="padding:10px 14px;border-radius:8px;border:none;background:#22d3ee;color:#012">Copy</button>
+  </div>
+  <p id="shareMsg" style="opacity:0.9;margin-top:8px"></p>
+</section>
+
 <section id="about" class="about">
   <h2>About This Game</h2>
   <p>
@@ -124,7 +136,30 @@
 <footer>
   © 2026 Pixiecode - Master Your Debugging Skills
 </footer>
-
+<script src="js/custom-share.js"></script>
+<script>
+  document.getElementById('openShare').addEventListener('click', ()=>{
+    const v = document.getElementById('shareInput').value.trim();
+    const msg = document.getElementById('shareMsg');
+    if(!v){ msg.innerText = 'Please paste a share code.'; return; }
+    const obj = window.decodeShare ? decodeShare(v) : null;
+    if(!obj){ msg.innerText = 'Invalid code.'; return; }
+    // store and navigate
+    localStorage.setItem('custom_launch', JSON.stringify(obj));
+    msg.innerText = 'Opening...';
+    if(obj.game === 'syntax-error') window.location.href = 'pages/games/syntax-error/GameLevel1.html';
+    else if(obj.game === 'syntax-savior') window.location.href = 'pages/games/syntax-savior/GameLevel2.html';
+    else if(obj.game === 'drag-drop') window.location.href = 'pages/games/drag-drop/easy.html';
+    else { msg.innerText = 'Unknown target game.'; }
+  });
+  document.getElementById('copyShareIndex').addEventListener('click', ()=>{
+    const v = document.getElementById('shareInput').value.trim();
+    if(!v){ document.getElementById('shareMsg').innerText = 'Nothing to copy.'; return; }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(v).then(()=>document.getElementById('shareMsg').innerText='Copied');
+    } else { const ta=document.createElement('textarea'); ta.value=v; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); document.getElementById('shareMsg').innerText='Copied'; }
+  });
+</script>
 <script src="js/index.js"></script>
 </body>
 </html>
