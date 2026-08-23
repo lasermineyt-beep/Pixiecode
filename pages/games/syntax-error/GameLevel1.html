@@ -337,7 +337,23 @@ const baseChallenges = [
 
 // Duplicate
 let fullChallenges = [];
-for(let i=0;i<1;i++) fullChallenges.push(...baseChallenges);
+try{
+  const custom = localStorage.getItem('custom_launch');
+  if(custom){
+    const obj = JSON.parse(custom);
+    if(obj && obj.site==='pixiecode' && obj.game==='syntax-error' && obj.payload){
+      fullChallenges.push(obj.payload);
+      // consume once
+      localStorage.removeItem('custom_launch');
+    } else {
+      for(let i=0;i<1;i++) fullChallenges.push(...baseChallenges);
+    }
+  } else {
+    for(let i=0;i<1;i++) fullChallenges.push(...baseChallenges);
+  }
+}catch(e){
+  for(let i=0;i<1;i++) fullChallenges.push(...baseChallenges);
+}
 
 // Shuffle questions
 function shuffleArray(array){

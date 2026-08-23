@@ -4,7 +4,7 @@ function toggleForm(){
   isLogin = !isLogin;
   document.getElementById('loginForm').classList.toggle('hidden');
   document.getElementById('registerForm').classList.toggle('hidden');
-  document.getElementById('formTitle').innerText = isLogin ? 'Welcome Back' : 'Join JanellaCult';
+  document.getElementById('formTitle').innerText = isLogin ? 'Welcome Back' : 'Join Pixiecode';
   document.querySelector('.toggle').innerText = isLogin ? "New here? Create an account" : "Already have an account? Login";
   document.getElementById('error').innerText = '';
 }
