@@ -72,9 +72,13 @@ document.querySelectorAll(".custom-select").forEach(select => {
     document.querySelectorAll(".select-options").forEach(o => {
       if (o !== options) o.style.display = "none";
     });
+    document.querySelectorAll(".card.select-open").forEach(card => {
+      card.classList.remove("select-open");
+    });
 
-    options.style.display =
-      options.style.display === "block" ? "none" : "block";
+    const shouldOpen = options.style.display !== "block";
+    options.style.display = shouldOpen ? "block" : "none";
+    if (shouldOpen) select.closest(".card").classList.add("select-open");
   });
 
   options.querySelectorAll("div").forEach(option => {
@@ -82,6 +86,7 @@ document.querySelectorAll(".custom-select").forEach(select => {
       selected.textContent = option.textContent;
       selectedTarget = option.dataset.value;
       options.style.display = "none";
+      select.closest(".card").classList.remove("select-open");
     });
   });
 });
@@ -90,6 +95,9 @@ document.querySelectorAll(".custom-select").forEach(select => {
 document.addEventListener("click", () => {
   document.querySelectorAll(".select-options").forEach(o => {
     o.style.display = "none";
+  });
+  document.querySelectorAll(".card.select-open").forEach(card => {
+    card.classList.remove("select-open");
   });
 });
 
